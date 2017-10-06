@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
-class CreateCategoriesTable extends Migration
+class CreateSearchesTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -13,12 +13,15 @@ class CreateCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('searches', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('keyword')->default('');
+            $table->integer('results_count')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
@@ -27,6 +30,6 @@ class CreateCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('categories');
+        Schema::drop('searches');
     }
 }
