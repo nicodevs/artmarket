@@ -2,9 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Post;
 use App\User;
-use App\Comment;
 use App\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +20,7 @@ class CategoriesTest extends TestCase
 
     private function prepareForTests()
     {
-        $user = factory(User::class, 'admin')->make();
+        $user = factory(User::class)->make();
 
         $response = $this->json('POST', 'api/auth/signup', [
             'name' => $user->name,
@@ -128,7 +126,7 @@ class CategoriesTest extends TestCase
             ]);
     }
 
-    public function test_a_guest_can_not_create_comments()
+    public function test_a_guest_can_not_create_categories()
     {
         $response = $this->json('POST', 'api/categories', [
             'name' => 'Guest category'
