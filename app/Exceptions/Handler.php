@@ -4,6 +4,10 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Illuminate\Database\QueryException;
 
 class Handler extends ExceptionHandler
 {
@@ -48,6 +52,43 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof MethodNotAllowedHttpException) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'code' => 'method_not_allowed',
+                'success' => false
+            ], 405);
+        } elseif ($exception instanceof NotFoundHttpException) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'code' => 'not_found',
+                'success' => false
+            ], 404);
+        } elseif ($exception instanceof QueryException) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'code' => 'database_error',
+                'success' => false
+            ], 404);
+        }
+
         return parent::render($request, $exception);
+    }
+
+    /**
+     * Convert a validation exception into a JSON response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Validation\ValidationException  $exception
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function invalidJson($request, ValidationException $exception)
+    {
+        return response()->json([
+            'message' => $exception->getMessage(),
+            'errors' => $exception->errors(),
+            'code' => 'invalid_fields',
+            'success' => false
+        ], $exception->status);
     }
 }
