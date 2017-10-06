@@ -141,7 +141,7 @@ class CategoriesTest extends TestCase
             ]);
     }
 
-    public function test_an_unexisting_comment_can_not_be_reached()
+    public function test_an_unexisting_category_can_not_be_reached()
     {
         $response = $this->json('GET', 'api/categories/99');
 
