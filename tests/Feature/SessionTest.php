@@ -40,7 +40,6 @@ class SessionTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'name' => $this->user->name,
                     'email' => $this->user->email
                 ],
                 'success' => true,
@@ -58,7 +57,6 @@ class SessionTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'name' => $this->user->name,
                     'email' => $this->user->email
                 ],
                 'success' => true,

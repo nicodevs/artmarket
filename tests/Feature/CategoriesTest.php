@@ -22,7 +22,7 @@ class CategoriesTest extends TestCase
 
     private function prepareForTests()
     {
-        $user = factory(User::class)->make();
+        $user = factory(User::class, 'admin')->make();
 
         $response = $this->json('POST', 'api/auth/signup', [
             'name' => $user->name,

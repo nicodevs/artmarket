@@ -24,7 +24,8 @@ class RegistrationTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'name' => $user->name,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
                     'email' => $user->email
                 ],
                 'success' => true,
