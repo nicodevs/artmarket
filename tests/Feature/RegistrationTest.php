@@ -15,7 +15,7 @@ class RegistrationTest extends TestCase
         $user = factory(User::class)->make();
 
         $response = $this->json('POST', 'api/auth/signup', [
-            'name' => $user->name,
+            'name' => 'Test User',
             'email' => $user->email,
             'password' => 'password'
         ]);
@@ -24,8 +24,8 @@ class RegistrationTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'first_name' => $user->first_name,
-                    'last_name' => $user->last_name,
+                    'first_name' => 'Test',
+                    'last_name' => 'User',
                     'email' => $user->email
                 ],
                 'success' => true,

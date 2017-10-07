@@ -28,6 +28,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'admin' => 'boolean',
+    ];
+
+    /**
      * Creates a unique username
      *
      * @param string $email Email

@@ -2,55 +2,32 @@
 
 namespace Tests\Feature;
 
-use App\User;
 use App\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
 class CategoriesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function setUp()
-    {
-        parent::setUp();
-        $this->prepareForTests();
-    }
-
-    private function prepareForTests()
-    {
-        $user = factory(User::class)->make();
-
-        $response = $this->json('POST', 'api/auth/signup', [
-            'name' => $user->name,
-            'email' => $user->email,
-            'password' => 'password'
-        ]);
-
-        $this->user = json_decode($response->getContent())->data;
-    }
-
     private function createCategory()
     {
         $this->category = factory(Category::class)->make();
 
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->user->token
-        ])->json('POST', 'api/categories', [
+        $response = $this->actingAsAdmin()->json('POST', 'api/categories', [
             'name' => $this->category->name
         ]);
+
+        $response->assertStatus(201);
 
         $this->category = json_decode($response->getContent())->data;
 
         return $response;
     }
 
-    public function test_a_registered_user_can_create_a_category()
+    public function test_an_admin_can_create_a_category()
     {
-        $response = $this->createCategory();
-
-        $response
+        $this->createCategory()
             ->assertStatus(201)
             ->assertJson([
                 'data' => [
@@ -62,11 +39,8 @@ class CategoriesTest extends TestCase
 
     public function test_a_category_has_required_fields()
     {
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->user->token
-        ])->json('POST', 'api/categories');
-
-        $response
+        $this->actingAsAdmin()
+            ->json('POST', 'api/categories')
             ->assertStatus(422)
             ->assertJson([
                 'success' => false,
@@ -78,9 +52,7 @@ class CategoriesTest extends TestCase
     {
         $category = factory(Category::class)->create();
 
-        $response = $this->json('GET', 'api/categories/' . $category->id);
-
-        $response
+        $this->json('GET', 'api/categories/' . $category->id)
             ->assertStatus(200)
             ->assertJson([
                 'success' => true,
@@ -91,17 +63,14 @@ class CategoriesTest extends TestCase
             ]);
     }
 
-    public function test_a_category_can_be_edited()
+    public function test_an_admin_can_edit_a_category()
     {
         $this->createCategory();
 
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->user->token
-        ])->json('PUT', 'api/categories/' . $this->category->id, [
-            'name' => 'New name'
-        ]);
-
-        $response
+        $this->actingAsAdmin()
+            ->json('PUT', 'api/categories/' . $this->category->id, [
+                'name' => 'New name'
+            ])
             ->assertStatus(200)
             ->assertJson([
                 'success' => true,
@@ -111,15 +80,12 @@ class CategoriesTest extends TestCase
             ]);
     }
 
-    public function test_a_category_can_be_deleted()
+    public function test_an_admin_can_delete_a_category()
     {
         $this->createCategory();
 
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->user->token
-        ])->json('DELETE', 'api/categories/' . $this->category->id);
-
-        $response
+        $this->actingAsAdmin()
+            ->json('DELETE', 'api/categories/' . $this->category->id)
             ->assertStatus(200)
             ->assertJson([
                 'success' => true
@@ -128,11 +94,9 @@ class CategoriesTest extends TestCase
 
     public function test_a_guest_can_not_create_categories()
     {
-        $response = $this->json('POST', 'api/categories', [
-            'name' => 'Guest category'
-        ]);
-
-        $response
+        $this->json('POST', 'api/categories', [
+                'name' => 'Guest category'
+            ])
             ->assertStatus(401)
             ->assertJson([
                 'success' => false
@@ -158,11 +122,9 @@ class CategoriesTest extends TestCase
     {
         $category = factory(Category::class)->create();
 
-        $response = $this->json('PUT', 'api/categories/' . $category->id, [
-            'name' => 'Updated name'
-        ]);
-
-        $response
+        $this->json('PUT', 'api/categories/' . $category->id, [
+                'name' => 'Updated name'
+            ])
             ->assertStatus(401)
             ->assertJson([
                 'success' => false
@@ -173,9 +135,7 @@ class CategoriesTest extends TestCase
     {
         $category = factory(Category::class)->create();
 
-        $response = $this->json('DELETE', 'api/categories/' . $category->id);
-
-        $response
+        $this->json('DELETE', 'api/categories/' . $category->id)
             ->assertStatus(401)
             ->assertJson([
                 'success' => false

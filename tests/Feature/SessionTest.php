@@ -13,15 +13,11 @@ class SessionTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->prepareForTests();
-    }
 
-    private function prepareForTests()
-    {
         $user = factory(User::class)->make();
 
         $response = $this->json('POST', 'api/auth/signup', [
-            'name' => $user->name,
+            'name' => 'Test User',
             'email' => $user->email,
             'password' => 'password'
         ]);
@@ -31,12 +27,10 @@ class SessionTest extends TestCase
 
     public function test_a_user_can_login()
     {
-        $response = $this->json('POST', 'api/auth/login', [
-            'email' => $this->user->email,
-            'password' => 'password'
-        ]);
-
-        $response
+        $this->json('POST', 'api/auth/login', [
+                'email' => $this->user->email,
+                'password' => 'password'
+            ])
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
@@ -51,9 +45,7 @@ class SessionTest extends TestCase
 
     public function test_a_user_can_check_his_session()
     {
-        $response = $this->json('GET', 'api/auth/whoami?token='. $this->user->token);
-
-        $response
+        $this->json('GET', 'api/auth/whoami?token=' . $this->user->token)
             ->assertStatus(200)
             ->assertJson([
                 'data' => [
