@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Category;
 use Illuminate\Http\Request;
 use App\Http\Resources\Category as CategoryResource;
-use App\Http\Resources\Categories as CategoriesResource;
 
 class CategoryController extends Controller
 {
@@ -39,7 +38,9 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|max:255'
+            'name' => 'required|max:255',
+            'cover' => 'sometimes',
+            'thumbnail' => 'sometimes'
         ]);
 
         $category = Category::create($data);
@@ -68,7 +69,9 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $data = $request->validate([
-            'name' => 'required|max:255',
+            'name' => 'sometimes|max:255',
+            'cover' => 'sometimes',
+            'thumbnail' => 'sometimes'
         ]);
 
         return new CategoryResource(tap($category)->update($data));
