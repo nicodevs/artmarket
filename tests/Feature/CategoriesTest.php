@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Content;
+use App\Category;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -11,39 +11,37 @@ class CategoriesTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createContent()
+    private function createCategory()
     {
-        $this->content = factory(Content::class)->make();
+        $this->category = factory(Category::class)->make();
 
-        $response = $this->actingAsAdmin()->json('POST', 'api/contents', [
-            'title' => $this->content->title,
-            'content' => $this->content->content
+        $response = $this->actingAsAdmin()->json('POST', 'api/categories', [
+            'name' => $this->category->name
         ]);
 
         $response->assertStatus(201);
 
-        $this->content = json_decode($response->getContent())->data;
+        $this->category = json_decode($response->getContent())->data;
 
         return $response;
     }
 
-    public function test_an_admin_can_create_a_content()
+    public function test_an_admin_can_create_a_category()
     {
-        $this->createContent()
+        $this->createCategory()
             ->assertStatus(201)
             ->assertJson([
                 'data' => [
-                    'title' => $this->content->title,
-                    'slug' => str_slug($this->content->title, '-')
+                    'name' => $this->category->name
                 ],
                 'success' => true
             ]);
     }
 
-    public function test_a_content_has_required_fields()
+    public function test_a_category_has_required_fields()
     {
         $this->actingAsAdmin()
-            ->json('POST', 'api/contents')
+            ->json('POST', 'api/categories')
             ->assertStatus(422)
             ->assertJson([
                 'success' => false,
@@ -51,71 +49,70 @@ class CategoriesTest extends TestCase
             ]);
     }
 
-    public function test_a_content_can_be_accessed()
+    public function test_a_category_can_be_accessed()
     {
-        $content = factory(Content::class)->create();
+        $category = factory(Category::class)->create();
 
-        $this->json('GET', 'api/contents/' . $content->id)
+        $this->json('GET', 'api/categories/' . $category->id)
             ->assertStatus(200)
             ->assertJson([
                 'success' => true,
                 'data' => [
-                    'id' => $content->id,
-                    'title' => $content->title
+                    'id' => $category->id,
+                    'name' => $category->name
                 ]
             ]);
     }
 
-    public function test_an_admin_can_edit_a_content()
+    public function test_an_admin_can_edit_a_category()
     {
-        $this->createContent();
+        $this->createCategory();
 
         $this->actingAsAdmin()
-            ->json('PUT', 'api/contents/' . $this->content->id, [
-                'title' => 'New title'
+            ->json('PUT', 'api/categories/' . $this->category->id, [
+                'name' => 'New name'
             ])
             ->assertStatus(200)
             ->assertJson([
                 'success' => true,
                 'data' => [
-                    'title' => 'New title',
-                    'slug' => 'new-title'
+                    'name' => 'New name'
                 ]
             ]);
     }
 
-    public function test_an_admin_can_delete_a_content()
+    public function test_an_admin_can_delete_a_category()
     {
-        $this->createContent();
+        $this->createCategory();
 
         $this->actingAsAdmin()
-            ->json('DELETE', 'api/contents/' . $this->content->id)
+            ->json('DELETE', 'api/categories/' . $this->category->id)
             ->assertStatus(200)
             ->assertJson([
                 'success' => true
             ]);
     }
 
-    public function test_an_unexisting_content_can_not_be_reached()
+    public function test_an_unexisting_category_can_not_be_reached()
     {
-        $response = $this->json('GET', 'api/contents/99');
+        $response = $this->json('GET', 'api/categories/99');
 
         $response->assertStatus(404);
 
-        $response = $this->json('PUT', 'api/contents/99');
+        $response = $this->json('PUT', 'api/categories/99');
 
         $response->assertStatus(404);
 
-        $response = $this->json('DELETE', 'api/contents/99');
+        $response = $this->json('DELETE', 'api/categories/99');
 
         $response->assertStatus(404);
     }
 
-    public function test_a_user_can_not_create_contents()
+    public function test_a_user_can_not_create_categories()
     {
         $this->actingAs(factory(User::class, 'user')->create())
-            ->json('POST', 'api/contents', [
-                'title' => 'User content'
+            ->json('POST', 'api/categories', [
+                'name' => 'Guest category'
             ])
             ->assertStatus(401)
             ->assertJson([
@@ -123,13 +120,13 @@ class CategoriesTest extends TestCase
             ]);
     }
 
-    public function test_a_user_can_not_edit_contents()
+    public function test_a_user_can_not_edit_categories()
     {
-        $content = factory(Content::class)->create();
+        $category = factory(Category::class)->create();
 
         $this->actingAs(factory(User::class, 'user')->create())
-            ->json('PUT', 'api/contents/' . $content->id, [
-                'title' => 'Updated title'
+            ->json('PUT', 'api/categories/' . $category->id, [
+                'name' => 'Updated name'
             ])
             ->assertStatus(401)
             ->assertJson([
@@ -137,22 +134,22 @@ class CategoriesTest extends TestCase
             ]);
     }
 
-    public function test_a_user_can_not_delete_contents()
+    public function test_a_user_can_not_delete_categories()
     {
-        $content = factory(Content::class)->create();
+        $category = factory(Category::class)->create();
 
         $this->actingAs(factory(User::class, 'user')->create())
-            ->json('DELETE', 'api/contents/' . $content->id)
+            ->json('DELETE', 'api/categories/' . $category->id)
             ->assertStatus(401)
             ->assertJson([
                 'success' => false
             ]);
     }
 
-    public function test_a_guest_can_not_create_contents()
+    public function test_a_guest_can_not_create_categories()
     {
-        $this->json('POST', 'api/contents', [
-                'title' => 'Guest content'
+        $this->json('POST', 'api/categories', [
+                'name' => 'Guest category'
             ])
             ->assertStatus(401)
             ->assertJson([
@@ -160,12 +157,12 @@ class CategoriesTest extends TestCase
             ]);
     }
 
-    public function test_a_guest_can_not_edit_contents()
+    public function test_a_guest_can_not_edit_categories()
     {
-        $content = factory(Content::class)->create();
+        $category = factory(Category::class)->create();
 
-        $this->json('PUT', 'api/contents/' . $content->id, [
-                'title' => 'Updated title'
+        $this->json('PUT', 'api/categories/' . $category->id, [
+                'name' => 'Updated name'
             ])
             ->assertStatus(401)
             ->assertJson([
@@ -173,11 +170,11 @@ class CategoriesTest extends TestCase
             ]);
     }
 
-    public function test_a_guest_can_not_delete_contents()
+    public function test_a_guest_can_not_delete_categories()
     {
-        $content = factory(Content::class)->create();
+        $category = factory(Category::class)->create();
 
-        $this->json('DELETE', 'api/contents/' . $content->id)
+        $this->json('DELETE', 'api/categories/' . $category->id)
             ->assertStatus(401)
             ->assertJson([
                 'success' => false
