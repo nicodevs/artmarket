@@ -20,3 +20,8 @@ $factory->defineAs(App\User::class, 'admin', function (Faker $faker) use ($facto
     $post = $factory->raw('App\User');
     return array_merge($post, ['username' => $faker->word, 'admin' => 1]);
 });
+
+$factory->defineAs(App\User::class, 'user', function (Faker $faker) use ($factory) {
+    $post = $factory->raw('App\User');
+    return array_merge($post, ['username' => $faker->word]);
+});
