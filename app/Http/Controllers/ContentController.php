@@ -39,6 +39,8 @@ class ContentController extends Controller
     {
         $data = $request->validate([
             'title' => 'required|max:255',
+            'in_sidebar' => 'sometimes',
+            'sequence' => 'sometimes',
             'content' => 'required'
         ]);
 
@@ -68,7 +70,10 @@ class ContentController extends Controller
     public function update(Request $request, Content $content)
     {
         $data = $request->validate([
-            'title' => 'sometimes|max:255'
+            'title' => 'sometimes|max:255',
+            'in_sidebar' => 'sometimes',
+            'sequence' => 'sometimes',
+            'content' => 'sometimes'
         ]);
 
         return new ContentResource(tap($content)->update($data));
