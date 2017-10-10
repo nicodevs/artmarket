@@ -15,13 +15,14 @@ class CreateFramesTable extends Migration
     {
         Schema::create('frames', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 50)->default('');
-            $table->string('description')->nullable()->default('');
-            $table->string('thumbnail')->nullable()->default('');
-            $table->string('border')->nullable()->default('');
+            $table->string('name', 50);
+            $table->string('description');
+            $table->string('thumbnail');
+            $table->string('border');
+            $table->string('border_mobile');
+            $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
