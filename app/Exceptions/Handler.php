@@ -3,11 +3,12 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Illuminate\Database\QueryException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -58,6 +59,12 @@ class Handler extends ExceptionHandler
                 'code' => 'method_not_allowed',
                 'success' => false
             ], 405);
+        } elseif ($exception instanceof ModelNotFoundException) {
+            return response()->json([
+                'message' => 'No results for query',
+                'code' => 'not_found',
+                'success' => false
+            ], 404);
         } elseif ($exception instanceof NotFoundHttpException) {
             return response()->json([
                 'message' => $exception->getMessage(),
