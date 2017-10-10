@@ -7,3 +7,4 @@ Route::get('auth/whoami', 'SessionController@show')->middleware('api.auth');
 Route::apiResource('categories', 'CategoryController');
 Route::apiResource('contents', 'ContentController');
 Route::apiResource('contests', 'ContestController');
+Route::apiResource('coupons', 'CouponController');

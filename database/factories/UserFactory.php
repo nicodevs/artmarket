@@ -7,11 +7,13 @@ $factory->define(App\User::class, function (Faker $faker) {
 
     $firstName = $faker->firstName;
     $lastName = $faker->lastName;
+    $email = $faker->unique()->safeEmail;
 
     return [
         'first_name' => $firstName,
         'last_name' => $lastName,
-        'email' => $faker->unique()->safeEmail,
+        'email' => $email,
+        'username' => str_before($email, '@'),
         'password' => $password ?: $password = bcrypt('secret')
     ];
 });
