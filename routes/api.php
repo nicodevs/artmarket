@@ -8,6 +8,7 @@ Route::apiResource('categories', 'CategoryController');
 Route::apiResource('contents', 'ContentController');
 Route::apiResource('contests', 'ContestController');
 Route::apiResource('coupons', 'CouponController');
+Route::apiResource('formats', 'FormatController');
 Route::apiResource('frames', 'FrameController');
 Route::apiResource('shippings', 'ShippingController');
 Route::apiResource('slides', 'SlideController');
