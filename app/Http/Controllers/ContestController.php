@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Contest;
 use Illuminate\Http\Request;
-use App\Http\Resources\Contest as ContestResource;
+use App\Http\Resources\Core\Collection as CollectionResource;
+use App\Http\Resources\Core\Item as ItemResource;
 
 class ContestController extends Controller
 {
@@ -24,9 +25,9 @@ class ContestController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Contest $contest)
     {
-        //
+        return new CollectionResource($contest->paginate(10));
     }
 
     /**
@@ -51,7 +52,7 @@ class ContestController extends Controller
 
         $contest = Contest::create($data);
 
-        return new ContestResource($contest);
+        return new ItemResource($contest);
     }
 
     /**
@@ -62,7 +63,7 @@ class ContestController extends Controller
      */
     public function show(Contest $contest)
     {
-        return new ContestResource($contest);
+        return new ItemResource($contest);
     }
 
     /**
@@ -86,7 +87,7 @@ class ContestController extends Controller
             'expires_at' => 'sometimes|date'
         ]);
 
-        return new ContestResource(tap($contest)->update($data));
+        return new ItemResource(tap($contest)->update($data));
     }
 
     /**

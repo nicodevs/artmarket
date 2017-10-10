@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use Illuminate\Http\Request;
-use App\Http\Resources\Category as CategoryResource;
+use App\Http\Resources\Core\Collection as CollectionResource;
+use App\Http\Resources\Core\Item as ItemResource;
 
 class CategoryController extends Controller
 {
@@ -24,9 +25,9 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Category $category)
     {
-        //
+        return new CollectionResource($category->paginate(10));
     }
 
     /**
@@ -45,7 +46,7 @@ class CategoryController extends Controller
 
         $category = Category::create($data);
 
-        return new CategoryResource($category);
+        return new ItemResource($category);
     }
 
     /**
@@ -56,7 +57,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        return new CategoryResource($category);
+        return new ItemResource($category);
     }
 
     /**
@@ -74,7 +75,7 @@ class CategoryController extends Controller
             'thumbnail' => 'sometimes'
         ]);
 
-        return new CategoryResource(tap($category)->update($data));
+        return new ItemResource(tap($category)->update($data));
     }
 
     /**

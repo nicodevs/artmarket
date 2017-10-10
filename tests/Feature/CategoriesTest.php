@@ -16,7 +16,9 @@ class CategoriesTest extends TestCase
         $this->category = factory(Category::class)->make();
 
         $response = $this->actingAsAdmin()->json('POST', 'api/categories', [
-            'name' => $this->category->name
+            'name' => $this->category->name,
+            'cover' => $this->category->cover,
+            'thumbnail' => $this->category->thumbnail
         ]);
 
         $response->assertStatus(201);
@@ -49,6 +51,26 @@ class CategoriesTest extends TestCase
             ]);
     }
 
+    public function test_the_categories_list_can_be_accessed()
+    {
+        $categories = factory(Category::class, 10)->create();
+
+        $this->json('GET', 'api/categories/')
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true
+            ])
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'name',
+                        'cover',
+                        'thumbnail'
+                    ]
+                ]
+            ]);
+    }
+
     public function test_a_category_can_be_accessed()
     {
         $category = factory(Category::class)->create();
@@ -59,7 +81,9 @@ class CategoriesTest extends TestCase
                 'success' => true,
                 'data' => [
                     'id' => $category->id,
-                    'name' => $category->name
+                    'name' => $category->name,
+                    'cover' => $category->cover,
+                    'thumbnail' => $category->thumbnail
                 ]
             ]);
     }

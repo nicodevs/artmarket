@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Content;
 use Illuminate\Http\Request;
-use App\Http\Resources\Content as ContentResource;
+use App\Http\Resources\Core\Collection as CollectionResource;
+use App\Http\Resources\Core\Item as ItemResource;
 
 class ContentController extends Controller
 {
@@ -24,9 +25,9 @@ class ContentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Content $content)
     {
-        //
+        return new CollectionResource($content->paginate(10));
     }
 
     /**
@@ -46,7 +47,7 @@ class ContentController extends Controller
 
         $content = Content::create($data);
 
-        return new ContentResource($content);
+        return new ItemResource($content);
     }
 
     /**
@@ -57,7 +58,7 @@ class ContentController extends Controller
      */
     public function show(Content $content)
     {
-        return new ContentResource($content);
+        return new ItemResource($content);
     }
 
     /**
@@ -76,7 +77,7 @@ class ContentController extends Controller
             'content' => 'sometimes'
         ]);
 
-        return new ContentResource(tap($content)->update($data));
+        return new ItemResource(tap($content)->update($data));
     }
 
     /**

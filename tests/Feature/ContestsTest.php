@@ -65,6 +65,33 @@ class ContestsTest extends TestCase
             ]);
     }
 
+    public function test_the_contest_list_can_be_accessed()
+    {
+        $contest = factory(Contest::class, 10)->create();
+
+        $this->json('GET', 'api/contests/')
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true
+            ])
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'title',
+                        'slug',
+                        'description',
+                        'cover',
+                        'prize_image_desktop',
+                        'prize_image_mobile',
+                        'winners_image_desktop',
+                        'winners_image_mobile',
+                        'expires_at'
+                    ]
+                ]
+            ]);
+    }
+
     public function test_a_contest_can_be_accessed()
     {
         $contest = factory(Contest::class)->create();

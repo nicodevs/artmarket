@@ -51,6 +51,29 @@ class ContentsTest extends TestCase
             ]);
     }
 
+    public function test_the_content_list_can_be_accessed()
+    {
+        $content = factory(Content::class, 10)->create();
+
+        $this->json('GET', 'api/contents/')
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true
+            ])
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'title',
+                        'slug',
+                        'in_sidebar',
+                        'sequence',
+                        'content'
+                    ]
+                ]
+            ]);
+    }
+
     public function test_a_content_can_be_accessed()
     {
         $content = factory(Content::class)->create();
