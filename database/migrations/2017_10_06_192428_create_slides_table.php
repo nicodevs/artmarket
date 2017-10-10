@@ -15,7 +15,7 @@ class CreateSlidesTable extends Migration
     {
         Schema::create('slides', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('description')->nullable()->default('');
+            $table->string('description')->default('');
             $table->string('desktop')->default('');
             $table->string('mobile')->default('');
             $table->integer('sequence')->default(0);
@@ -23,7 +23,6 @@ class CreateSlidesTable extends Migration
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.

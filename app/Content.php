@@ -30,21 +30,4 @@ class Content extends Model
             ]
         ];
     }
-
-    /**
-     * Convert the model instance to an array.
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        return [
-            'id' => $this->id,
-            'slug' => $this->slug,
-            'title' => $this->title,
-            'in_sidebar' => $this->in_sidebar,
-            'sequence' => $this->sequence,
-            'content' => $this->content
-        ];
-    }
 }
