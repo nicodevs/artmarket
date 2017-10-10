@@ -9,3 +9,4 @@ Route::apiResource('contents', 'ContentController');
 Route::apiResource('contests', 'ContestController');
 Route::apiResource('coupons', 'CouponController');
 Route::apiResource('frames', 'FrameController');
+Route::apiResource('shippings', 'ShippingController');
