@@ -22,14 +22,14 @@ class ImageController extends Controller
             'tags' => 'required',
             'url_disk' => 'sometimes',
             'categories' => 'required|array',
-            'contest_id' => 'sometimes|integer'
+            'contest_id' => 'sometimes|integer|exists:contests,id'
         ],
         'update' => [
             'user' => [
                 'name' => 'sometimes|max:50',
                 'description' => 'sometimes|max:255',
                 'tags' => 'sometimes',
-                'contest_id' => 'sometimes|integer',
+                'contest_id' => 'sometimes|integer|exists:contests,id',
                 'categories' => 'sometimes'
             ],
             'admin' => [
@@ -77,7 +77,7 @@ class ImageController extends Controller
 
         $image = auth()->user()->images()->create($data);
 
-        $this->attachCategories($request, $image);
+        $image->saveCategories($data);
 
         return new ItemResource($image);
     }
@@ -111,7 +111,9 @@ class ImageController extends Controller
 
         $data = $request->validate($rules);
 
-        return new ItemResource(tap($image)->update($data));
+        $image = tap($image)->update($data)->saveCategories($data);
+
+        return new ItemResource($image);
     }
 
     /**
@@ -126,14 +128,5 @@ class ImageController extends Controller
 
         $image->delete();
         return ['success' => true];
-    }
-
-    private function attachCategories(Request $request, Image $image)
-    {
-        if (!$request->has('categories') || !is_array($request->categories)) {
-            return false;
-        }
-
-        $image->categories()->sync($request->categories);
     }
 }

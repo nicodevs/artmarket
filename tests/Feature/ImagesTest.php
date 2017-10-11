@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Image;
 use App\User;
+use App\Contest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -291,5 +292,46 @@ class ImagesTest extends TestCase
 
         $response = $this->json('DELETE', 'api/images/99');
         $response->assertStatus(404);
+    }
+
+    public function test_an_image_can_not_participate_in_an_invalid_contest()
+    {
+        $image = factory(Image::class)->make();
+        $user = factory(User::class)->create();
+        $created = $user->images()->create($image->toArray());
+
+        $response = $this->actingAsUser($user)
+            ->json('PUT', 'api/images/' . $created->id, [
+                'contest_id' => 1
+            ])
+            ->assertStatus(422)
+            ->assertJson([
+                'success' => false
+            ])
+            ->assertJsonStructure([
+                'errors' => [
+                    'contest_id'
+                ]
+            ]);
+    }
+
+    public function test_an_image_can_participate_in_an_valid_contest()
+    {
+        $image = factory(Image::class)->make();
+        $user = factory(User::class)->create();
+        $contest = factory(Contest::class)->create();
+        $created = $user->images()->create($image->toArray());
+
+        $response = $this->actingAsUser($user)
+            ->json('PUT', 'api/images/' . $created->id, [
+                'contest_id' => $contest->id
+            ])
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'contest_id' => $contest->id
+                ]
+            ]);
     }
 }

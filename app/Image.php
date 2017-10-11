@@ -45,19 +45,18 @@ class Image extends Model
     }
 
     /**
-     * Save the model to the database.
+     * Adds the image to an array of categories.
      *
-     * @param  array  $options
-     * @return bool
+     * @param  array  $data
+     * @return App\Image
      */
-    /*
-    public function save(array $options = [])
+    public function saveCategories($data)
     {
-        parent::save();
-        dd($this->categories_ids);
-        if (isset($this->categories_ids)) {
-            $this->categories()->sync($this->categories_ids);
+        if (!isset($data['categories'])) {
+            return $this;
         }
+
+        $this->categories()->sync($data['categories']);
+        return $this;
     }
-    */
 }
