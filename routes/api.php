@@ -12,3 +12,4 @@ Route::apiResource('formats', 'FormatController');
 Route::apiResource('frames', 'FrameController');
 Route::apiResource('shippings', 'ShippingController');
 Route::apiResource('slides', 'SlideController');
+Route::apiResource('images', 'ImageController');

@@ -37,6 +37,22 @@ class User extends Authenticatable
     ];
 
     /**
+     * The users have images.
+     */
+    public function images()
+    {
+        return $this->hasMany('App\Image');
+    }
+
+    /**
+     * Check if the user owns the related model.
+     */
+    public function owns($model)
+    {
+        return $this->id === $model->user_id;
+    }
+
+    /**
      * Creates a unique username
      *
      * @param string $email Email
