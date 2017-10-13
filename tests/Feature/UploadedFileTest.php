@@ -8,7 +8,7 @@ use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-class ImageFileTest extends TestCase
+class UploadedFileTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -83,7 +83,7 @@ class ImageFileTest extends TestCase
 
     public function test_a_user_can_upload_an_image_file()
     {
-        Storage::fake('temporal');
+        Storage::fake('uploads');
 
         $response = $this->actingAsUser(factory(User::class)->create())
             ->json('POST', 'api/images/files', [
@@ -103,6 +103,6 @@ class ImageFileTest extends TestCase
 
         $filename = json_decode($response->getContent())->data->filename;
 
-        Storage::disk('temporal')->assertExists($filename);
+        Storage::disk('uploads')->assertExists('temporal/' . $filename);
     }
 }

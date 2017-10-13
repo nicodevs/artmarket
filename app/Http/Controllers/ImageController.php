@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Image;
-use Illuminate\Http\Request;
-use App\Http\Resources\Images as CollectionResource;
 use App\Http\Resources\Image as ItemResource;
+use App\Http\Resources\Images as CollectionResource;
+use App\Image;
+use App\UploadedFile;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
@@ -67,17 +69,16 @@ class ImageController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  \App\UploadedFile  $uploadedFile
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, UploadedFile $uploadedFile)
     {
-        $rules = $this->rules['store'];
-
-        $data = $request->validate($rules);
+        $data = $request->validate($this->rules['store']);
 
         $image = auth()->user()->images()->create($data);
 
-        $image->saveCategories($data);
+        $image->saveCategories($data)->saveImageFiles($data, $uploadedFile, Storage::disk('uploads'));
 
         return new ItemResource($image);
     }
@@ -98,9 +99,10 @@ class ImageController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Image  $image
+     * @param  \App\UploadedFile  $uploadedFile
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Image $image)
+    public function update(Request $request, UploadedFile $uploadedFile, Image $image)
     {
         $this->checkUserAccess($image);
 
@@ -108,10 +110,9 @@ class ImageController extends Controller
         if (auth()->user()->admin) {
             $rules = array_merge($rules, $this->rules['update']['admin']);
         }
-
         $data = $request->validate($rules);
 
-        $image = tap($image)->update($data)->saveCategories($data);
+        $image = tap($image)->update($data)->saveCategories($data)->saveImageFiles($data, $uploadedFile, Storage::disk('uploads'));
 
         return new ItemResource($image);
     }

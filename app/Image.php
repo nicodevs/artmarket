@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Exceptions\InvalidUploadedFileException;
 use Illuminate\Database\Eloquent\Model;
 
 class Image extends Model
@@ -25,7 +26,9 @@ class Image extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'user_id' => 'integer'
+        'user_id' => 'integer',
+        'width' => 'integer',
+        'height' => 'integer'
     ];
 
     /**
@@ -57,6 +60,36 @@ class Image extends Model
         }
 
         $this->categories()->sync($data['categories']);
+        return $this;
+    }
+
+    /**
+     * Moves the image file to the right folder.
+     *
+     * @param  array  $data
+     * @param  \App\ImageFile  $imageFile
+     * @return App\Image
+     */
+    public function saveImageFiles($data, $imageFile, $storage)
+    {
+        if (!isset($data['url'])) {
+            return $this;
+        }
+
+        $file = $imageFile->where('filename', '=', $data['url'])->first();
+        if (!$file) {
+            throw new InvalidUploadedFileException;
+        }
+
+        $this->width = $file->width;
+        $this->height = $file->height;
+        $this->orientation = $file->orientation;
+        $this->save();
+
+        $file->delete();
+
+        $storage->move('temporal/' . $file->filename, 'originals/' . $file->filename);
+
         return $this;
     }
 }

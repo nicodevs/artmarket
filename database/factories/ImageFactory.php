@@ -14,7 +14,7 @@ $factory->define(App\Image::class, function (Faker $faker) {
     ];
 });
 
-$factory->defineAs(App\Image::class, 'whitout_categories', function (Faker $faker) {
+$factory->defineAs(App\Image::class, 'without_relationships', function (Faker $faker) {
     return [
         'name' => $faker->word,
         'description' => $faker->sentence,

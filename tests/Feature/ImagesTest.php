@@ -7,23 +7,47 @@ use App\User;
 use App\Contest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class ImagesTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function uploadFile()
+    {
+        $this->user = factory(User::class)->create();
+
+        Storage::fake('uploads');
+
+        $response = $this->actingAsUser($this->user)
+            ->json('POST', 'api/images/files', [
+                'image' => UploadedFile::fake()->image('photo.jpg', 2000, 3000)->size(1500)
+            ])
+            ->assertStatus(201);
+
+        $this->fakeFile = json_decode($response->getContent())->data;
+    }
+
+    private function getUser()
+    {
+        return $this->user;
+    }
+
+    private function getFakeFile()
+    {
+        return $this->fakeFile;
+    }
+
     public function test_a_user_can_create_an_image()
     {
-        $image = factory(Image::class)->make();
-        $user = factory(User::class)->create();
+        $this->uploadFile();
+        $image = factory(Image::class)->make(['url' => $this->getFakeFile()->filename]);
         $data = $image->toArray();
 
-        $response = $this->actingAsUser($user)
-            ->json('POST', 'api/images', $data);
-
-        //dd($response->getContent());
-
-        $response->assertStatus(201)
+        $response = $this->actingAsUser($this->getUser())
+            ->json('POST', 'api/images', $data)
+            ->assertStatus(201)
             ->assertJson([
                 'success' => true,
                 'data' => [
@@ -51,9 +75,7 @@ class ImagesTest extends TestCase
 
     public function test_an_image_has_required_fields()
     {
-        $user = factory(User::class)->create();
-
-        $response = $this->actingAsUser($user)
+        $this->actingAsUser(factory(User::class)->create())
             ->json('POST', 'api/images', [
                 'name' => 'Foo'
             ])
@@ -66,8 +88,9 @@ class ImagesTest extends TestCase
 
     public function test_a_user_can_edit_an_image()
     {
-        $image = factory(Image::class)->make();
-        $user = factory(User::class)->create();
+        $this->uploadFile();
+        $image = factory(Image::class)->make(['url' => $this->getFakeFile()->filename]);
+        $user = $this->getUser();
         $created = $user->images()->create($image->toArray());
 
         $data = factory(Image::class, 'user_edit')->make()->toArray();
@@ -83,11 +106,12 @@ class ImagesTest extends TestCase
 
     public function test_a_user_can_delete_an_image()
     {
-        $image = factory(Image::class)->make();
-        $user = factory(User::class)->create();
+        $this->uploadFile();
+        $image = factory(Image::class)->make(['url' => $this->getFakeFile()->filename]);
+        $user = $this->getUser();
         $created = $user->images()->create($image->toArray());
 
-        $response = $this->actingAsUser($user)
+        $this->actingAsUser($user)
             ->json('DELETE', 'api/images/' . $created->id)
             ->assertStatus(200)
             ->assertJson([
@@ -97,13 +121,14 @@ class ImagesTest extends TestCase
 
     public function test_a_user_can_not_edit_an_image_he_does_not_own()
     {
-        $image = factory(Image::class)->make();
+        $this->uploadFile();
+        $image = factory(Image::class)->make(['url' => $this->getFakeFile()->filename]);
         $owner = factory(User::class)->create();
         $created = $owner->images()->create($image->toArray());
 
-        $user = factory(User::class)->create();
+        $illegal = factory(User::class)->create();
 
-        $response = $this->actingAsUser($user)
+        $this->actingAsUser($illegal)
             ->json('PUT', 'api/images/' . $created->id, [
                 'name' => 'Foo'
             ])
@@ -115,13 +140,14 @@ class ImagesTest extends TestCase
 
     public function test_a_user_can_not_delete_an_image_he_does_not_own()
     {
-        $image = factory(Image::class)->make();
+        $this->uploadFile();
+        $image = factory(Image::class)->make(['url' => $this->getFakeFile()->filename]);
         $owner = factory(User::class)->create();
         $created = $owner->images()->create($image->toArray());
 
-        $user = factory(User::class)->create();
+        $illegal = factory(User::class)->create();
 
-        $response = $this->actingAsUser($user)
+        $this->actingAsUser($illegal)
             ->json('DELETE', 'api/images/' . $created->id)
             ->assertStatus(401)
             ->assertJson([
@@ -132,12 +158,12 @@ class ImagesTest extends TestCase
     public function test_an_admin_can_edit_an_image()
     {
         $image = factory(Image::class)->make();
-        $user = factory(User::class)->create();
-        $created = $user->images()->create($image->toArray());
+        $owner = factory(User::class)->create();
+        $created = $owner->images()->create($image->toArray());
 
         $data = factory(Image::class, 'admin_edit')->make()->toArray();
 
-        $response = $this->actingAsAdmin()
+        $this->actingAsAdmin()
             ->json('PUT', 'api/images/' . $created->id, $data)
             ->assertStatus(200)
             ->assertJson([
@@ -149,10 +175,10 @@ class ImagesTest extends TestCase
     public function test_an_admin_can_delete_an_image()
     {
         $image = factory(Image::class)->make();
-        $user = factory(User::class)->create();
-        $created = $user->images()->create($image->toArray());
+        $owner = factory(User::class)->create();
+        $created = $owner->images()->create($image->toArray());
 
-        $response = $this->actingAsAdmin()
+        $this->actingAsAdmin()
             ->json('DELETE', 'api/images/' . $created->id)
             ->assertStatus(200)
             ->assertJson([
@@ -162,8 +188,9 @@ class ImagesTest extends TestCase
 
     public function test_a_user_can_not_edit_reserved_fields()
     {
-        $image = factory(Image::class)->make();
-        $user = factory(User::class)->create();
+        $this->uploadFile();
+        $image = factory(Image::class)->make(['url' => $this->getFakeFile()->filename]);
+        $user = $this->getUser();
         $created = $user->images()->create($image->toArray());
 
         $created->status = 'BANNED';
@@ -171,7 +198,7 @@ class ImagesTest extends TestCase
         $created->url = 'Bar';
         $created->save();
 
-        $response = $this->actingAsUser($user)
+        $this->actingAsUser($user)
             ->json('PUT', 'api/images/' . $created->id, [
                 'status' => 'APPROVED',
                 'visibility' => 'ALL',
@@ -192,7 +219,8 @@ class ImagesTest extends TestCase
     public function test_a_guest_can_not_create_images()
     {
         $this->json('POST', 'api/images', [
-                'name' => 'Guest image'
+                'name' => 'Guest image',
+                'url' => 'test.jpg'
             ])
             ->assertStatus(401)
             ->assertJson([
@@ -203,8 +231,8 @@ class ImagesTest extends TestCase
     public function test_a_guest_can_not_edit_images()
     {
         $image = factory(Image::class)->make();
-        $user = factory(User::class)->create();
-        $created = $user->images()->create($image->toArray());
+        $owner = factory(User::class)->create();
+        $created = $owner->images()->create($image->toArray());
 
         $this->json('PUT', 'api/images/' . $created->id, [
                 'name' => 'Updated name'
@@ -218,8 +246,8 @@ class ImagesTest extends TestCase
     public function test_a_guest_can_not_delete_images()
     {
         $image = factory(Image::class)->make();
-        $user = factory(User::class)->create();
-        $created = $user->images()->create($image->toArray());
+        $owner = factory(User::class)->create();
+        $created = $owner->images()->create($image->toArray());
 
         $this->json('DELETE', 'api/images/' . $created->id)
             ->assertStatus(401)
@@ -230,9 +258,9 @@ class ImagesTest extends TestCase
 
     public function test_an_image_can_be_publicly_accessed()
     {
-        $image = factory(Image::class, 'whitout_categories')->create();
+        $image = factory(Image::class, 'without_relationships')->create();
 
-        $response = $this->json('GET', 'api/images/' . $image->id)
+        $this->json('GET', 'api/images/' . $image->id)
             ->assertStatus(200)
             ->assertJson([
                 'success' => true,
@@ -242,7 +270,7 @@ class ImagesTest extends TestCase
 
     public function test_the_image_list_can_be_publicly_accessed()
     {
-        $image = factory(Image::class, 'whitout_categories', 10)->create();
+        factory(Image::class, 'without_relationships', 10)->create();
 
         $this->json('GET', 'api/images/')
             ->assertStatus(200)
@@ -297,10 +325,10 @@ class ImagesTest extends TestCase
     public function test_an_image_can_not_participate_in_an_invalid_contest()
     {
         $image = factory(Image::class)->make();
-        $user = factory(User::class)->create();
-        $created = $user->images()->create($image->toArray());
+        $owner = factory(User::class)->create();
+        $created = $owner->images()->create($image->toArray());
 
-        $response = $this->actingAsUser($user)
+        $this->actingAsUser($owner)
             ->json('PUT', 'api/images/' . $created->id, [
                 'contest_id' => 1
             ])
@@ -317,12 +345,13 @@ class ImagesTest extends TestCase
 
     public function test_an_image_can_participate_in_an_valid_contest()
     {
-        $image = factory(Image::class)->make();
-        $user = factory(User::class)->create();
         $contest = factory(Contest::class)->create();
-        $created = $user->images()->create($image->toArray());
 
-        $response = $this->actingAsUser($user)
+        $image = factory(Image::class)->make();
+        $owner = factory(User::class)->create();
+        $created = $owner->images()->create($image->toArray());
+
+        $this->actingAsUser($owner)
             ->json('PUT', 'api/images/' . $created->id, [
                 'contest_id' => $contest->id
             ])
@@ -331,6 +360,26 @@ class ImagesTest extends TestCase
                 'success' => true,
                 'data' => [
                     'contest_id' => $contest->id
+                ]
+            ]);
+    }
+
+    public function test_an_image_has_an_image_file()
+    {
+        $this->uploadFile();
+        $file = $this->getFakeFile();
+        $image = factory(Image::class)->make(['url' => $this->getFakeFile()->filename]);
+
+        $this->actingAsUser($this->getUser())
+            ->json('POST', 'api/images', $image->toArray())
+            ->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'name' => $image->name,
+                    'width' => $file->width,
+                    'height' => $file->height,
+                    'orientation' => $file->orientation
                 ]
             ]);
     }

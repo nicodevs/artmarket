@@ -26,7 +26,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 220,
                 'glass_cost' => 80,
                 'pack_price' => 250,
-                'pack_cost' => 75
+                'pack_cost' => 75,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Cuadro medium',
@@ -42,7 +44,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 220,
                 'glass_cost' => 80,
                 'pack_price' => 450,
-                'pack_cost' => 100
+                'pack_cost' => 100,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Cuadro large',
@@ -58,7 +62,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 220,
                 'glass_cost' => 80,
                 'pack_price' => 500,
-                'pack_cost' => 150
+                'pack_cost' => 150,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Poster small',
@@ -74,7 +80,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 0,
                 'glass_cost' => 0,
                 'pack_price' => 25,
-                'pack_cost' => 5
+                'pack_cost' => 5,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Poster medium',
@@ -90,7 +98,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 0,
                 'glass_cost' => 0,
                 'pack_price' => 25,
-                'pack_cost' => 5
+                'pack_cost' => 5,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Poster large',
@@ -106,7 +116,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 0,
                 'glass_cost' => 0,
                 'pack_price' => 25,
-                'pack_cost' => 5
+                'pack_cost' => 5,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Cuadro XL',
@@ -122,7 +134,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 220,
                 'glass_cost' => 100,
                 'pack_price' => 500,
-                'pack_cost' => 150
+                'pack_cost' => 150,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Poster XL',
@@ -138,7 +152,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 0,
                 'glass_cost' => 0,
                 'pack_price' => 25,
-                'pack_cost' => 5
+                'pack_cost' => 5,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Disco small',
@@ -154,7 +170,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 100,
                 'glass_cost' => 50,
                 'pack_price' => 80,
-                'pack_cost' => 50
+                'pack_cost' => 50,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Disco medium',
@@ -170,7 +188,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 200,
                 'glass_cost' => 125,
                 'pack_price' => 120,
-                'pack_cost' => 75
+                'pack_cost' => 75,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Disco large',
@@ -186,7 +206,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 300,
                 'glass_cost' => 150,
                 'pack_price' => 200,
-                'pack_cost' => 75
+                'pack_cost' => 75,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Disco XL',
@@ -202,7 +224,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 500,
                 'glass_cost' => 200,
                 'pack_price' => 500,
-                'pack_cost' => 50
+                'pack_cost' => 50,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Cut Off small',
@@ -218,7 +242,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 100,
                 'glass_cost' => 50,
                 'pack_price' => 100,
-                'pack_cost' => 50
+                'pack_cost' => 50,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Cut Off medium',
@@ -234,7 +260,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 200,
                 'glass_cost' => 100,
                 'pack_price' => 200,
-                'pack_cost' => 100
+                'pack_cost' => 100,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Cut Off large',
@@ -250,7 +278,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 300,
                 'glass_cost' => 150,
                 'pack_price' => 300,
-                'pack_cost' => 150
+                'pack_cost' => 150,
+                'side' => 0,
+                'minimum_pixels' => 0
             ],
             [
                 'name' => 'Cut Off XL',
@@ -266,7 +296,9 @@ class FormatsTableSeeder extends Seeder
                 'glass_price' => 400,
                 'glass_cost' => 200,
                 'pack_price' => 400,
-                'pack_cost' => 200
+                'pack_cost' => 200,
+                'side' => 0,
+                'minimum_pixels' => 0
             ]
         ]);
     }
