@@ -6,6 +6,8 @@ use App\Contest;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class ContestsTest extends TestCase
 {
@@ -13,22 +15,31 @@ class ContestsTest extends TestCase
 
     private function createContest()
     {
-        $this->contest = factory(Contest::class)->make();
+        Storage::fake('uploads');
+
+        $contest = factory(Contest::class)->make();
 
         $response = $this->actingAsAdmin()->json('POST', 'api/contests', [
-            'title' => $this->contest->title,
-            'description' => $this->contest->description,
-            'terms' => $this->contest->terms,
-            'cover' => $this->contest->cover,
-            'prize_image_desktop' => $this->contest->prize_image_desktop,
-            'prize_image_mobile' => $this->contest->prize_image_mobile,
-            'winners_image_desktop' => $this->contest->winners_image_desktop,
-            'winners_image_mobile' => $this->contest->winners_image_mobile,
-            'expires_at' => $this->contest->expires_at
+            'title' => $contest->title,
+            'description' => $contest->description,
+            'terms' => $contest->terms,
+            'expires_at' => $contest->expires_at,
+            'cover' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
+            'prize_image_desktop' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
+            'prize_image_mobile' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
+            'winners_image_desktop' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
+            'winners_image_mobile' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000)
         ]);
 
         $response->assertStatus(201);
+
         $this->contest = json_decode($response->getContent())->data;
+
+        Storage::disk('uploads')->assertExists('contests/' . $this->contest->cover);
+        Storage::disk('uploads')->assertExists('contests/' . $this->contest->prize_image_desktop);
+        Storage::disk('uploads')->assertExists('contests/' . $this->contest->prize_image_mobile);
+        Storage::disk('uploads')->assertExists('contests/' . $this->contest->winners_image_desktop);
+        Storage::disk('uploads')->assertExists('contests/' . $this->contest->winners_image_mobile);
 
         return $response;
     }
