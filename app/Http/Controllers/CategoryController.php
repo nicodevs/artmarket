@@ -32,6 +32,13 @@ class CategoryController extends Controller
     ];
 
     /**
+     * The images folder.
+     *
+     * @var array
+     */
+    protected $imagesFolder = 'categories';
+
+    /**
      * Instantiate a new controller instance.
      *
      * @return void

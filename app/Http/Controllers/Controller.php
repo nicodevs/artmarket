@@ -56,7 +56,7 @@ class Controller extends BaseController
         foreach ($this->imageFields as $field) {
             if (isset($data[$field])) {
                 $filename = $filename = md5(uniqid()) . '.' . $request->file($field)->getClientOriginalExtension();
-                $request->file($field)->storeAs('categories', $filename, 'uploads');
+                $request->file($field)->storeAs($this->imagesFolder, $filename, 'uploads');
                 $data[$field] = $filename;
             }
         }

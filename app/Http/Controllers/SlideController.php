@@ -10,6 +10,36 @@ use App\Http\Resources\Core\Item as ItemResource;
 class SlideController extends Controller
 {
     /**
+     * The validation rules.
+     *
+     * @var array
+     */
+    protected $rules = [
+        'description' => 'required',
+        'desktop' => 'required|dimensions:min_width=100,min_height=100',
+        'mobile' => 'required|dimensions:min_width=100,min_height=100',
+        'sequence' => 'integer',
+        'href' => 'url'
+    ];
+
+    /**
+     * The columns that contain image paths.
+     *
+     * @var array
+     */
+    protected $imageFields = [
+        'desktop',
+        'mobile'
+    ];
+
+    /**
+     * The images folder.
+     *
+     * @var array
+     */
+    protected $imagesFolder = 'slides';
+
+    /**
      * Instantiate a new controller instance.
      *
      * @return void
@@ -38,13 +68,9 @@ class SlideController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'description' => 'required',
-            'desktop' => 'required',
-            'mobile' => 'required',
-            'sequence' => 'sometimes|integer',
-            'href' => 'sometimes|url'
-        ]);
+        $data = $request->validate($this->getValidationRules('store'));
+
+        $data = $this->saveImages($request, $data);
 
         $slide = Slide::create($data);
 
@@ -71,13 +97,9 @@ class SlideController extends Controller
      */
     public function update(Request $request, Slide $slide)
     {
-        $data = $request->validate([
-            'description' => 'sometimes',
-            'desktop' => 'sometimes',
-            'mobile' => 'sometimes',
-            'sequence' => 'sometimes|integer',
-            'href' => 'sometimes|url'
-        ]);
+        $data = $request->validate($this->getValidationRules('update'));
+
+        $data = $this->saveImages($request, $data);
 
         return new ItemResource(tap($slide)->update($data));
     }

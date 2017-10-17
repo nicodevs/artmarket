@@ -6,6 +6,8 @@ use App\Slide;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class SlidesTest extends TestCase
 {
@@ -13,13 +15,24 @@ class SlidesTest extends TestCase
 
     private function createSlide()
     {
-        $this->slide = factory(Slide::class)->make();
+        Storage::fake('uploads');
 
-        $response = $this->actingAsAdmin()->json('POST', 'api/slides', $this->slide->toArray());
+        $slide = factory(Slide::class)->make()->toArray();
+
+        $response = $this->actingAsAdmin()->json('POST', 'api/slides', [
+            'description' => $slide['description'],
+            'sequence' => $slide['sequence'],
+            'href' => $slide['href'],
+            'desktop' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
+            'mobile' => UploadedFile::fake()->image('mobile.jpg', 300, 300)->size(1000)
+        ]);
 
         $response->assertStatus(201);
 
         $this->slide = json_decode($response->getContent())->data;
+
+        Storage::disk('uploads')->assertExists('slides/' . $this->slide->desktop);
+        Storage::disk('uploads')->assertExists('slides/' . $this->slide->mobile);
 
         return $response;
     }
