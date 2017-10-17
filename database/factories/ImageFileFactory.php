@@ -2,7 +2,7 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(App\UploadedFile::class, function (Faker $faker) {
+$factory->define(App\ImageFile::class, function (Faker $faker) {
     return [
         'extension' => 'jpg',
         'mime_type' => 'image/jpeg',

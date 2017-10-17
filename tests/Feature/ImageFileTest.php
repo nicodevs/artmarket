@@ -8,7 +8,7 @@ use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-class UploadedFileTest extends TestCase
+class ImageFileTest extends TestCase
 {
     use RefreshDatabase;
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\Image as ItemResource;
 use App\Http\Resources\Images as CollectionResource;
 use App\Image;
-use App\UploadedFile;
+use App\ImageFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -69,16 +69,16 @@ class ImageController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\UploadedFile  $uploadedFile
+     * @param  \App\ImageFile  $imageFile
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, UploadedFile $uploadedFile)
+    public function store(Request $request, ImageFile $imageFile)
     {
         $data = $request->validate($this->rules['store']);
 
         $image = auth()->user()->images()->create($data);
 
-        $image->saveCategories($data)->saveImageFiles($data, $uploadedFile, Storage::disk('uploads'));
+        $image->saveCategories($data)->saveImageFiles($data, $imageFile, Storage::disk('uploads'));
 
         return new ItemResource($image);
     }
@@ -99,10 +99,10 @@ class ImageController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Image  $image
-     * @param  \App\UploadedFile  $uploadedFile
+     * @param  \App\ImageFile  $imageFile
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, UploadedFile $uploadedFile, Image $image)
+    public function update(Request $request, ImageFile $imageFile, Image $image)
     {
         $this->checkUserAccess($image);
 
@@ -112,7 +112,7 @@ class ImageController extends Controller
         }
         $data = $request->validate($rules);
 
-        $image = tap($image)->update($data)->saveCategories($data)->saveImageFiles($data, $uploadedFile, Storage::disk('uploads'));
+        $image = tap($image)->update($data)->saveCategories($data)->saveImageFiles($data, $imageFile, Storage::disk('uploads'));
 
         return new ItemResource($image);
     }

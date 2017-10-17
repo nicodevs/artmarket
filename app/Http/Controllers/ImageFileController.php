@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\UploadedFile;
+use App\ImageFile;
 use Illuminate\Http\Request;
 use App\Http\Resources\Core\Item as ItemResource;
 use Illuminate\Validation\Rule;
 
-class UploadedFileController extends Controller
+class ImageFileController extends Controller
 {
     /**
      * Instantiate a new controller instance.
@@ -45,7 +45,7 @@ class UploadedFileController extends Controller
         $filename = md5(uniqid()) . '.' . $extension;
         $path = $request->image->storeAs('temporal', $filename, 'uploads');
 
-        $file = UploadedFile::create([
+        $file = ImageFile::create([
             'filename' => $filename,
             'extension' => $extension,
             'mime_type' => $mimeType,
