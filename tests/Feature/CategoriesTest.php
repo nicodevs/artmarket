@@ -6,6 +6,8 @@ use App\Category;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class CategoriesTest extends TestCase
 {
@@ -13,17 +15,22 @@ class CategoriesTest extends TestCase
 
     private function createCategory()
     {
+        Storage::fake('uploads');
+
         $this->category = factory(Category::class)->make();
 
         $response = $this->actingAsAdmin()->json('POST', 'api/categories', [
             'name' => $this->category->name,
-            'cover' => $this->category->cover,
-            'thumbnail' => $this->category->thumbnail
+            'cover' => UploadedFile::fake()->image('cover.jpg', 200, 200)->size(1000),
+            'thumbnail' => UploadedFile::fake()->image('thumbnail.jpg', 200, 200)->size(1000)
         ]);
 
         $response->assertStatus(201);
 
         $this->category = json_decode($response->getContent())->data;
+
+        Storage::disk('uploads')->assertExists('categories/' . $this->category->cover);
+        Storage::disk('uploads')->assertExists('categories/' . $this->category->thumbnail);
 
         return $response;
     }
@@ -37,6 +44,8 @@ class CategoriesTest extends TestCase
                     'name' => $this->category->name
                 ],
                 'success' => true
+            ])->assertJsonStructure([
+                'data' => ['name', 'thumbnail', 'cover']
             ]);
     }
 

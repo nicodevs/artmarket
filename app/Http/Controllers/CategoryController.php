@@ -3,12 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Category;
-use Illuminate\Http\Request;
 use App\Http\Resources\Core\Collection as CollectionResource;
 use App\Http\Resources\Core\Item as ItemResource;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
+    /**
+     * The validation rules.
+     *
+     * @var array
+     */
+    protected $rules = [
+        'name' => 'required|max:255',
+        'thumbnail' => 'sometimes|required|dimensions:min_width=100,min_height=100',
+        'cover' => 'sometimes|required|dimensions:min_width=100,min_height=100'
+    ];
+
+    /**
+     * The columns that contain image paths.
+     *
+     * @var array
+     */
+    protected $imageFields = [
+        'thumbnail',
+        'cover'
+    ];
+
     /**
      * Instantiate a new controller instance.
      *
@@ -38,11 +60,9 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|max:255',
-            'cover' => 'sometimes',
-            'thumbnail' => 'sometimes'
-        ]);
+        $data = $request->validate($this->getValidationRules('store'));
+
+        $data = $this->saveImages($request, $data);
 
         $category = Category::create($data);
 
@@ -69,11 +89,9 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $data = $request->validate([
-            'name' => 'sometimes|max:255',
-            'cover' => 'sometimes',
-            'thumbnail' => 'sometimes'
-        ]);
+        $data = $request->validate($this->getValidationRules('update'));
+
+        $data = $this->saveImages($request, $data);
 
         return new ItemResource(tap($category)->update($data));
     }
