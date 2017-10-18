@@ -8,6 +8,7 @@ use App\Image;
 use App\ImageFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Exceptions\InvalidUploadedFileException;
 
 class ImageController extends Controller
 {
@@ -78,9 +79,11 @@ class ImageController extends Controller
     {
         $data = $request->validate($this->getValidationRules('store'));
 
-        $image = auth()->user()->images()->create($data);
+        $image = $this->saveImageFiles(new Image($data), $request);
 
-        $image->saveCategories($data)->saveImageFiles($data, $imageFile, Storage::disk('uploads'));
+        $image = auth()->user()->images()->save($image);
+
+        $image->saveCategories($data);
 
         return new ItemResource($image);
     }
@@ -110,7 +113,9 @@ class ImageController extends Controller
 
         $data = $request->validate($this->getValidationRules('update'));
 
-        $image = tap($image)->update($data)->saveCategories($data)->saveImageFiles($data, $imageFile, Storage::disk('uploads'));
+        $image = $this->saveImageFiles($image, $request);
+
+        tap($image)->update($data)->saveCategories($data);
 
         return new ItemResource($image);
     }
@@ -146,5 +151,56 @@ class ImageController extends Controller
         }
 
         return $rules;
+    }
+
+    /**
+     * Saves the uploaded images and move the image files.
+     *
+     * @param App\Image $image
+     * @param  array  $data
+     * @return App\Image
+     */
+    protected function saveImageFiles($image, $data)
+    {
+        foreach (['frame', 'disk', 'cutoff'] as $type) {
+
+            if ($type === 'frame') {
+                $url = 'url';
+                $width = 'width';
+                $height = 'height';
+            } else {
+                $url = 'url_' . $type;
+                $width = 'width_' . $type;
+                $height = 'height_' . $type;
+            }
+
+            if (isset($data[$url])) {
+                if ($type === 'disk' && $data[$url] === 'AUTO') {
+
+                    $max = min([$image->width, $image->height]);
+                    $image->setAttribute($width, $max);
+                    $image->setAttribute($height, $max);
+
+                } else {
+
+                    $file = ImageFile::where('filename', '=', $data[$url])->first();
+                    if (!$file) {
+                        throw new InvalidUploadedFileException;
+                    }
+
+                    $image->setAttribute($width, $file->width);
+                    $image->setAttribute($height, $file->height);
+
+                    if ($type === 'frame') {
+                        $image->setAttribute('orientation', $file->orientation);
+                    }
+
+                    $file->delete();
+                    Storage::disk('uploads')->move('temporal/' . $file->filename, 'originals/' . $file->filename);
+                }
+            }
+        }
+
+        return $image;
     }
 }

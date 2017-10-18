@@ -272,8 +272,7 @@ class ImagesTest extends TestCase
         $this->actingAsUser($user)
             ->json('PUT', 'api/images/' . $created->id, [
                 'status' => 'APPROVED',
-                'visibility' => 'ALL',
-                'url_cutoff' => 'Foo'
+                'visibility' => 'ALL'
             ])
             ->assertStatus(200)
             ->assertJson([
