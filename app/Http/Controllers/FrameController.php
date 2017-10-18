@@ -10,6 +10,37 @@ use App\Http\Resources\Core\Item as ItemResource;
 class FrameController extends Controller
 {
     /**
+     * The validation rules.
+     *
+     * @var array
+     */
+    protected $rules = [
+        'name' => 'required|max:255',
+        'description' => 'required',
+        'border' => 'required|dimensions:min_width=50,min_height=50',
+        'border_mobile' => 'required|dimensions:min_width=50,min_height=50',
+        'thumbnail' => 'required|dimensions:min_width=10,min_height=10'
+    ];
+
+    /**
+     * The columns that contain image paths.
+     *
+     * @var array
+     */
+    protected $imageFields = [
+        'border',
+        'border_mobile',
+        'thumbnail'
+    ];
+
+    /**
+     * The images folder.
+     *
+     * @var array
+     */
+    protected $imagesFolder = 'frames';
+
+    /**
      * Instantiate a new controller instance.
      *
      * @return void
@@ -38,13 +69,9 @@ class FrameController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|max:50',
-            'description' => 'required',
-            'border' => 'required',
-            'border_mobile' => 'required',
-            'thumbnail' => 'required'
-        ]);
+        $data = $request->validate($this->getValidationRules('store'));
+
+        $data = $this->saveImages($request, $data);
 
         $frame = Frame::create($data);
 
@@ -71,13 +98,9 @@ class FrameController extends Controller
      */
     public function update(Request $request, Frame $frame)
     {
-        $data = $request->validate([
-            'name' => 'sometimes|max:50',
-            'description' => 'sometimes',
-            'border' => 'sometimes',
-            'border_mobile' => 'sometimes',
-            'thumbnail' => 'sometimes'
-        ]);
+        $data = $request->validate($this->getValidationRules('update'));
+
+        $data = $this->saveImages($request, $data);
 
         return new ItemResource(tap($frame)->update($data));
     }
@@ -92,5 +115,28 @@ class FrameController extends Controller
     {
         $frame->delete();
         return ['success' => true];
+    }
+
+    /**
+     * Return the images folder path according to the field name.
+     *
+     * @param  string  $field
+     * @return string
+     */
+    protected function getImageFolder($field)
+    {
+        switch ($field) {
+            case 'border':
+                $folder = 'borders/desktop/';                break;
+
+            case 'border_mobile':
+                $folder = 'borders/mobile/';
+                break;
+
+            case 'thumbnail':
+                $folder = 'thumbnails/';
+                break;
+        }
+        return $this->imagesFolder . '/' . $folder;
     }
 }

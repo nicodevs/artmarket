@@ -6,6 +6,8 @@ use App\Frame;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class FramesTest extends TestCase
 {
@@ -13,13 +15,25 @@ class FramesTest extends TestCase
 
     private function createFrame()
     {
-        $this->frame = factory(Frame::class)->make();
+        Storage::fake('uploads');
 
-        $response = $this->actingAsAdmin()->json('POST', 'api/frames', $this->frame->toArray());
+        $frame = factory(Frame::class)->make();
+
+        $response = $this->actingAsAdmin()->json('POST', 'api/frames', [
+            'name' => $frame->name,
+            'description' => $frame->description,
+            'border' => UploadedFile::fake()->image('desktop.jpg', 50, 50)->size(200),
+            'border_mobile' => UploadedFile::fake()->image('desktop.jpg', 50, 50)->size(200),
+            'thumbnail' => UploadedFile::fake()->image('desktop.jpg', 50, 50)->size(200)
+        ]);
 
         $response->assertStatus(201);
 
         $this->frame = json_decode($response->getContent())->data;
+
+        Storage::disk('uploads')->assertExists('frames/borders/desktop/' . $this->frame->border);
+        Storage::disk('uploads')->assertExists('frames/borders/mobile/' . $this->frame->border_mobile);
+        Storage::disk('uploads')->assertExists('frames/thumbnails/' . $this->frame->thumbnail);
 
         return $response;
     }
