@@ -11,11 +11,13 @@ class Image extends Model
         'name',
         'description',
         'url',
+        'url_disk',
         'contest_id',
         'tags',
         'visibility',
         'featured',
         'extra',
+        'gravity',
         'status'
     ];
 
@@ -72,24 +74,37 @@ class Image extends Model
      */
     public function saveImageFiles($data, $imageFile, $storage)
     {
-        if (!isset($data['url'])) {
-            return $this;
+        foreach (['frame', 'disk', 'cutoff'] as $type) {
+
+            if ($type === 'frame') {
+                $url = 'url';
+                $width = 'width';
+                $height = 'height';
+            } else {
+                $url = 'url_' . $type;
+                $width = 'width_' . $type;
+                $height = 'height_' . $type;
+            }
+
+            if (isset($data[$url])) {
+                $file = $imageFile->where('filename', '=', $data[$url])->first();
+                if (!$file) {
+                    throw new InvalidUploadedFileException;
+                }
+
+                $this->setAttribute($width, $file->width);
+                $this->setAttribute($height, $file->height);
+
+                if ($type === 'frame') {
+                    $this->setAttribute('orientation', $file->orientation);
+                }
+
+                $file->delete();
+                $storage->move('temporal/' . $file->filename, 'originals/' . $file->filename);
+            }
         }
 
-        $file = $imageFile->where('filename', '=', $data['url'])->first();
-        if (!$file) {
-            throw new InvalidUploadedFileException;
-        }
-
-        $this->width = $file->width;
-        $this->height = $file->height;
-        $this->orientation = $file->orientation;
         $this->save();
-
-        $file->delete();
-
-        $storage->move('temporal/' . $file->filename, 'originals/' . $file->filename);
-
         return $this;
     }
 }

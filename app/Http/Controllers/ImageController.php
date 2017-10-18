@@ -23,6 +23,7 @@ class ImageController extends Controller
             'url' => 'required',
             'tags' => 'required',
             'url_disk' => 'sometimes',
+            'gravity' => 'sometimes',
             'categories' => 'required|array',
             'contest_id' => 'sometimes|integer|exists:contests,id'
         ],
@@ -32,7 +33,8 @@ class ImageController extends Controller
                 'description' => 'sometimes|max:255',
                 'tags' => 'sometimes',
                 'contest_id' => 'sometimes|integer|exists:contests,id',
-                'categories' => 'sometimes'
+                'categories' => 'sometimes',
+                'gravity' => 'sometimes'
             ],
             'admin' => [
                 'status' => 'sometimes',
@@ -74,7 +76,7 @@ class ImageController extends Controller
      */
     public function store(Request $request, ImageFile $imageFile)
     {
-        $data = $request->validate($this->rules['store']);
+        $data = $request->validate($this->getValidationRules('store'));
 
         $image = auth()->user()->images()->create($data);
 
@@ -106,11 +108,7 @@ class ImageController extends Controller
     {
         $this->checkUserAccess($image);
 
-        $rules = $this->rules['update']['user'];
-        if (auth()->user()->admin) {
-            $rules = array_merge($rules, $this->rules['update']['admin']);
-        }
-        $data = $request->validate($rules);
+        $data = $request->validate($this->getValidationRules('update'));
 
         $image = tap($image)->update($data)->saveCategories($data)->saveImageFiles($data, $imageFile, Storage::disk('uploads'));
 
@@ -129,5 +127,24 @@ class ImageController extends Controller
 
         $image->delete();
         return ['success' => true];
+    }
+
+    /**
+     * Returns the validation rules.
+     *
+     * @return array
+     */
+    protected function getValidationRules($action)
+    {
+        if ($action === 'store') {
+            return $this->rules['store'];
+        }
+
+        $rules = $this->rules['update']['user'];
+        if (auth()->user()->admin) {
+            $rules = array_merge($rules, $this->rules['update']['admin']);
+        }
+
+        return $rules;
     }
 }

@@ -73,6 +73,77 @@ class ImagesTest extends TestCase
             ]);
     }
 
+    public function test_a_user_can_set_the_disc_attributes()
+    {
+        $this->uploadFile();
+        $image = factory(Image::class)->make([
+            'url' => $this->getFakeFile()->filename,
+            'url_disk' => 'AUTO',
+            'gravity' => 'North'
+        ]);
+        $data = $image->toArray();
+
+        $response = $this->actingAsUser($this->getUser())
+            ->json('POST', 'api/images', $data)
+            ->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'name' => $image->name,
+                    'url_disk' => 'AUTO',
+                    'gravity' => 'North'
+                ]
+            ]);
+    }
+
+    public function test_an_admin_can_set_a_custom_disc_image()
+    {
+        Storage::fake('uploads');
+
+        $user = factory(User::class)->create();
+
+        $response = $this->actingAsUser($user)
+            ->json('POST', 'api/images/files', [
+                'image' => UploadedFile::fake()->image('frame.jpg', 2000, 3000)->size(1500)
+            ])
+            ->assertStatus(201);
+
+        $url = json_decode($response->getContent())->data->filename;
+
+        $response = $this->actingAsUser($user)
+            ->json('POST', 'api/images/files', [
+                'image' => UploadedFile::fake()->image('disc.png', 2000, 2000)->size(1500)
+            ])
+            ->assertStatus(201);
+
+        $urlDisc = json_decode($response->getContent())->data->filename;
+
+        $image = factory(Image::class)->make([
+            'url' => $url,
+            'url_disk' => $urlDisc
+        ]);
+        $data = $image->toArray();
+
+        $response = $this->actingAsUser($user)
+            ->json('POST', 'api/images', $data)
+            ->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'name' => $image->name,
+                    'url' => $image->url,
+                    'url_disk' => $image->url_disk,
+                    'width' => 2000,
+                    'height' => 3000,
+                    'width_disk' => 2000,
+                    'height_disk' => 2000
+                ]
+            ]);
+
+        Storage::disk('uploads')->assertExists('originals/' . $image->url);
+        Storage::disk('uploads')->assertExists('originals/' . $image->url_disk);
+    }
+
     public function test_an_image_has_required_fields()
     {
         $this->actingAsUser(factory(User::class)->create())
