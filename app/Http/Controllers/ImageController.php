@@ -23,7 +23,7 @@ class ImageController extends Controller
             'description' => 'required|max:255',
             'url' => 'required',
             'tags' => 'required',
-            'url_disk' => 'sometimes',
+            'url_disc' => 'sometimes',
             'gravity' => 'sometimes',
             'categories' => 'required|array',
             'contest_id' => 'sometimes|integer|exists:contests,id'
@@ -39,7 +39,7 @@ class ImageController extends Controller
             ],
             'admin' => [
                 'status' => 'sometimes',
-                'url_disk' => 'sometimes',
+                'url_disc' => 'sometimes',
                 'url_cutoff' => 'sometimes',
                 'visibility' => 'sometimes',
                 'featured' => 'sometimes|boolean',
@@ -162,7 +162,7 @@ class ImageController extends Controller
      */
     protected function saveImageFiles($image, $data)
     {
-        foreach (['frame', 'disk', 'cutoff'] as $type) {
+        foreach (['frame', 'disc', 'cutoff'] as $type) {
 
             if ($type === 'frame') {
                 $url = 'url';
@@ -175,7 +175,7 @@ class ImageController extends Controller
             }
 
             if (isset($data[$url])) {
-                if ($type === 'disk' && $data[$url] === 'AUTO') {
+                if ($type === 'disc' && $data[$url] === 'AUTO') {
 
                     $max = min([$image->width, $image->height]);
                     $image->setAttribute($width, $max);

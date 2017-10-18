@@ -78,7 +78,7 @@ class ImagesTest extends TestCase
         $this->uploadFile();
         $image = factory(Image::class)->make([
             'url' => $this->getFakeFile()->filename,
-            'url_disk' => 'AUTO',
+            'url_disc' => 'AUTO',
             'gravity' => 'North'
         ]);
         $data = $image->toArray();
@@ -90,7 +90,7 @@ class ImagesTest extends TestCase
                 'success' => true,
                 'data' => [
                     'name' => $image->name,
-                    'url_disk' => 'AUTO',
+                    'url_disc' => 'AUTO',
                     'gravity' => 'North'
                 ]
             ]);
@@ -120,7 +120,7 @@ class ImagesTest extends TestCase
 
         $image = factory(Image::class)->make([
             'url' => $url,
-            'url_disk' => $urlDisc
+            'url_disc' => $urlDisc
         ]);
         $data = $image->toArray();
 
@@ -132,16 +132,16 @@ class ImagesTest extends TestCase
                 'data' => [
                     'name' => $image->name,
                     'url' => $image->url,
-                    'url_disk' => $image->url_disk,
+                    'url_disc' => $image->url_disc,
                     'width' => 2000,
                     'height' => 3000,
-                    'width_disk' => 2000,
-                    'height_disk' => 2000
+                    'width_disc' => 2000,
+                    'height_disc' => 2000
                 ]
             ]);
 
         Storage::disk('uploads')->assertExists('originals/' . $image->url);
-        Storage::disk('uploads')->assertExists('originals/' . $image->url_disk);
+        Storage::disk('uploads')->assertExists('originals/' . $image->url_disc);
     }
 
     public function test_an_image_has_required_fields()
@@ -357,7 +357,7 @@ class ImagesTest extends TestCase
                         'contest_id',
                         'tags',
                         'url',
-                        'url_disk',
+                        'url_disc',
                         'url_cutoff',
                         'gravity',
                         'status',
@@ -366,8 +366,8 @@ class ImagesTest extends TestCase
                         'sales',
                         'visits',
                         'width',
-                        'width_disk',
-                        'height_disk',
+                        'width_disc',
+                        'height_disc',
                         'width_cutoff',
                         'height_cutoff',
                         'height',

@@ -18,7 +18,7 @@ class CreateSizesTable extends Migration
             $table->string('name', 50)->default('');
             $table->integer('max_frame')->unsigned();
             $table->integer('max_poster')->unsigned();
-            $table->integer('max_disk')->unsigned();
+            $table->integer('max_disc')->unsigned();
             $table->integer('max_cutoff')->unsigned();
             $table->integer('minimum_pixels')->nullable();
         });

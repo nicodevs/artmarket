@@ -22,7 +22,7 @@ class CreateImagesTable extends Migration
             $table->string('tags')->nullable();
             $table->string('orientation')->nullable();
             $table->string('url')->default('');
-            $table->string('url_disk')->default('');
+            $table->string('url_disc')->default('');
             $table->string('url_cutoff')->default('');
             $table->string('gravity')->nullable();
             $table->string('status')->default('REVISION');
@@ -31,8 +31,8 @@ class CreateImagesTable extends Migration
             $table->integer('sales')->unsigned()->default(0);
             $table->integer('visits')->unsigned()->default(0);
             $table->integer('width')->unsigned()->default(0);
-            $table->integer('width_disk')->unsigned()->default(0);
-            $table->integer('height_disk')->unsigned()->default(0);
+            $table->integer('width_disc')->unsigned()->default(0);
+            $table->integer('height_disc')->unsigned()->default(0);
             $table->integer('width_cutoff')->unsigned()->default(0);
             $table->integer('height_cutoff')->unsigned()->default(0);
             $table->integer('height')->unsigned()->default(0);

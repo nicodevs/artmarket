@@ -16,7 +16,7 @@ class SizesTableSeeder extends Seeder
                 'name' => 'small',
                 'max_frame' => 45,
                 'max_poster' => 45,
-                'max_disk' => 30,
+                'max_disc' => 30,
                 'max_cutoff' => 30,
                 'minimum_pixels' => 1276
             ],
@@ -24,7 +24,7 @@ class SizesTableSeeder extends Seeder
                 'name' => 'medium',
                 'max_frame' => 60,
                 'max_poster' => 60,
-                'max_disk' => 45,
+                'max_disc' => 45,
                 'max_cutoff' => 45,
                 'minimum_pixels' => 1701
             ],
@@ -32,7 +32,7 @@ class SizesTableSeeder extends Seeder
                 'name' => 'large',
                 'max_frame' => 85,
                 'max_poster' => 85,
-                'max_disk' => 65,
+                'max_disc' => 65,
                 'max_cutoff' => 65,
                 'minimum_pixels' => 2409
             ],
@@ -40,7 +40,7 @@ class SizesTableSeeder extends Seeder
                 'name' => 'xl',
                 'max_frame' => 120,
                 'max_poster' => 120,
-                'max_disk' => 100,
+                'max_disc' => 100,
                 'max_cutoff' => 100,
                 'minimum_pixels' => 3118
             ]

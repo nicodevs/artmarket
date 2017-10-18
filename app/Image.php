@@ -11,7 +11,7 @@ class Image extends Model
         'name',
         'description',
         'url',
-        'url_disk',
+        'url_disc',
         'contest_id',
         'tags',
         'visibility',

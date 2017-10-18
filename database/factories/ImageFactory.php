@@ -42,7 +42,7 @@ $factory->defineAs(App\Image::class, 'admin_edit', function (Faker $faker) {
         'status' => $status[array_rand($status)],
         'extra' => json_encode([
             'cutoff' => [],
-            'disk' => [
+            'disc' => [
                 md5($faker->word) . '.jpg'
             ]
         ])
