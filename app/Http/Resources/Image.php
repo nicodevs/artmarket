@@ -16,6 +16,7 @@ class Image extends Core\Item
         $image['categories'] = $this->categories->map(function ($category) {
             return ['id' => $category->id, 'name' => $category->name];
         });
+        $image['comments'] = $this->comments()->with('user:id,username,first_name,last_name,avatar')->get();
         return $image;
     }
 }

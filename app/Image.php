@@ -29,8 +29,17 @@ class Image extends Model
     protected $casts = [
         'id' => 'integer',
         'user_id' => 'integer',
+        'contest_id' => 'integer',
+        'height' => 'integer',
+        'height_cutoff' => 'integer',
+        'height_disc' => 'integer',
         'width' => 'integer',
-        'height' => 'integer'
+        'width_cutoff' => 'integer',
+        'width_disc' => 'integer',
+        'featured'=> 'boolean',
+        'sales'=> 'integer',
+        'visits'=> 'integer',
+        'random'=> 'integer'
     ];
 
     /**
@@ -47,6 +56,14 @@ class Image extends Model
     public function categories()
     {
         return $this->belongsToMany('App\Category', 'categories_images');
+    }
+
+    /**
+     * The comments of the image.
+     */
+    public function comments()
+    {
+        return $this->hasMany('App\Comment');
     }
 
     /**

@@ -14,3 +14,6 @@ Route::apiResource('shippings', 'ShippingController');
 Route::apiResource('slides', 'SlideController');
 Route::apiResource('images', 'ImageController');
 Route::post('images/files', 'ImageFileController@store');
+
+Route::apiResource('comments', 'CommentController');
+Route::post('images/{image}/comments', 'CommentController@store');
