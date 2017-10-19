@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\CommentCreated;
+
 Route::post('auth/signup', 'RegistrationController@store');
 Route::post('auth/login', 'SessionController@store');
 Route::get('auth/whoami', 'SessionController@show')->middleware('api.auth');

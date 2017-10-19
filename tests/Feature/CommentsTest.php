@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Comment;
-use App\User;
+use App\Events\CommentCreated;
 use App\Image;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class CommentsTest extends TestCase
@@ -14,6 +16,8 @@ class CommentsTest extends TestCase
 
     public function test_a_user_can_comment_an_image()
     {
+        Event::fake();
+
         $user = factory(User::class)->create();
         $image = factory(Image::class, 'without_relationships')->make();
         $image = $user->images()->save($image);
@@ -28,6 +32,10 @@ class CommentsTest extends TestCase
                 ],
                 'success' => true
             ]);
+
+        Event::assertDispatched(CommentCreated::class, function ($event) use ($comment) {
+            return $event->comment->text === $comment->text;
+        });
     }
 
     public function test_a_comment_has_required_fields()
@@ -75,7 +83,8 @@ class CommentsTest extends TestCase
 
     public function test_anyone_can_read_the_comments_of_an_image()
     {
-        $image = factory(Image::class, 'without_relationships')->create();
+        $author = factory(User::class)->create();
+        $image = factory(Image::class, 'without_relationships')->create(['user_id' => $author->id]);
 
         $this->actingAsUser(factory(User::class)->create())
             ->json('POST', 'api/images/' . $image->id . '/comments', ['text' => 'Foo'])

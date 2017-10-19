@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Comment;
-use App\Image;
-use Illuminate\Http\Request;
+use App\Events\CommentCreated;
 use App\Http\Resources\Core\Collection as CollectionResource;
 use App\Http\Resources\Core\Item as ItemResource;
+use App\Image;
+use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
@@ -55,6 +56,8 @@ class CommentController extends Controller
         $comment->user_id = auth()->user()->id;
 
         $comment = $image->comments()->save($comment);
+
+        event(new CommentCreated($image, $comment));
 
         return new ItemResource($comment);
     }
