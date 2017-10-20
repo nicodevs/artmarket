@@ -67,6 +67,14 @@ class Image extends Model
     }
 
     /**
+     * The likes of the image.
+     */
+    public function likes()
+    {
+        return $this->hasMany('App\Like');
+    }
+
+    /**
      * Adds the image to an array of categories.
      *
      * @param  array  $data

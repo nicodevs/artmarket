@@ -28,4 +28,19 @@ class NotificationsTest extends TestCase
             'type' => 'COMMENT'
         ]);
     }
+
+    public function test_a_like_notification_can_be_composed()
+    {
+        $author = factory(User::class)->create();
+        $image = factory(Image::class, 'without_relationships')->create(['user_id' => $author->id]);
+        $liker = factory(User::class)->create();
+        $like = $liker->likesImage($image);
+
+        $notification = new Notification;
+        $notification->compose('LIKE', $image->user, $image, $like);
+
+        $this->assertDatabaseHas('notifications', [
+            'type' => 'LIKE'
+        ]);
+    }
 }

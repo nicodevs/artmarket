@@ -60,6 +60,10 @@ class Notification extends Model
             case 'COMMENT':
                 $description = '<a href="/author/' . $extra->user->username . '">' . $extra->user->first_name . '</a> dej&oacute; un comentario en tu imagen <a href="/images/' . $image->id . '">' . $image->name . '</a>: ' . $extra->text;
                 break;
+
+            case 'LIKE':
+                $description = 'A <a href="/author/' . $extra->user->username . '">' . $extra->user->first_name . '</a> le gusta tu imagen <a href="/images/' . $image->id . '">' . $image->name . '</a>';
+                break;
         }
 
         return $this->create([

@@ -15,7 +15,8 @@ Route::apiResource('frames', 'FrameController');
 Route::apiResource('shippings', 'ShippingController');
 Route::apiResource('slides', 'SlideController');
 Route::apiResource('images', 'ImageController');
-Route::post('images/files', 'ImageFileController@store');
-
 Route::apiResource('comments', 'CommentController');
+Route::post('images/files', 'ImageFileController@store');
 Route::post('images/{image}/comments', 'CommentController@store');
+Route::post('images/{image}/likes', 'LikeController@store');
+Route::delete('images/{image}/likes', 'LikeController@destroy');

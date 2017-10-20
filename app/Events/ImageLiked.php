@@ -2,32 +2,32 @@
 
 namespace App\Events;
 
-use App\Comment;
+use App\Like;
 use App\Image;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class CommentCreated
+class ImageLiked
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $image;
-    public $comment;
+    public $like;
 
     /**
      * Create a new event instance.
      *
-     * @param App\Comment $comment
+     * @param App\Like $like
      * @return void
      */
-    public function __construct(Image $image, Comment $comment)
+    public function __construct(Image $image, Like $like)
     {
-        $this->comment = $comment;
+        $this->like = $like;
         $this->image = $image;
     }
 

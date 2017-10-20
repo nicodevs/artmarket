@@ -45,11 +45,44 @@ class User extends Authenticatable
     }
 
     /**
+     * The users have likes.
+     */
+    public function likes()
+    {
+        return $this->hasMany('App\Like');
+    }
+
+    /**
      * Check if the user owns the related model.
+     *
+     * @param Illuminate\Database\Eloquent\Model $model
+     * @return boolean
      */
     public function owns($model)
     {
         return $this->id === $model->user_id;
+    }
+
+    /**
+     * Likes an image.
+     *
+     * @param integer $imageId
+     * @return App\Like
+     */
+    public function likesImage($imageId)
+    {
+        return $this->likes()->updateOrCreate(['image_id' => $imageId]);
+    }
+
+    /**
+     * Dislikes an image.
+     *
+     * @param integer $imageId
+     * @return App\Like
+     */
+    public function dislikesImage($imageId)
+    {
+        return $this->likes()->where('image_id', '=', 1)->delete();
     }
 
     /**
@@ -77,9 +110,9 @@ class User extends Authenticatable
      * Tells if an username exist in the database
      *
      * @param string $username Username
-     * @return bool True if is unique, false if is already used
+     * @return boolean Returns true if the username is unique
      */
-    public function usernameExist($username)
+    private function usernameExist($username)
     {
         return $this->where('username', '=', $username)->exists();
     }

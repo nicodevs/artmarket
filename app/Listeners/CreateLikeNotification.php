@@ -2,12 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\CommentCreated;
+use App\Events\ImageLiked;
 use App\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class CreateCommentNotification
+class CreateLikeNotification
 {
     public $notification;
 
@@ -24,16 +24,16 @@ class CreateCommentNotification
     /**
      * Handle the event.
      *
-     * @param  CommentCreated  $event
+     * @param  ImageLiked  $event
      * @return void
      */
-    public function handle(CommentCreated $event)
+    public function handle(ImageLiked $event)
     {
         $this->notification->compose(
-            'COMMENT',
+            'LIKE',
             $event->image->user,
             $event->image,
-            $event->comment
+            $event->like
         );
     }
 }
