@@ -16,9 +16,10 @@ class UserUnauthorizedException extends Exception
     public function render($request)
     {
         return response()->json([
+            'success' => false,
             'message' => 'Your user has no access to this object',
             'code' => 'user_unauthorized',
-            'success' => false
+            'user' => auth()->user()? auth()->user()->toArray() : false
         ], 401);
     }
 }
