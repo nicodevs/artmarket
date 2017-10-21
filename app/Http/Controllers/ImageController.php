@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ImageApproved;
+use App\Exceptions\InvalidUploadedFileException;
 use App\Http\Resources\Image as ItemResource;
 use App\Http\Resources\Images as CollectionResource;
 use App\Image;
 use App\ImageFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Exceptions\InvalidUploadedFileException;
 
 class ImageController extends Controller
 {
@@ -115,7 +116,13 @@ class ImageController extends Controller
 
         $image = $this->saveImageFiles($image, $request);
 
-        tap($image)->update($data)->saveCategories($data);
+        $image->fill($data);
+
+        $this->controlStatusChange($image);
+
+        $image->save();
+
+        $image->saveCategories($data);
 
         return new ItemResource($image);
     }
@@ -202,5 +209,19 @@ class ImageController extends Controller
         }
 
         return $image;
+    }
+
+    /**
+     * Fires events for image changes
+     *
+     * @param App\Image $image
+     * @return void
+     */
+    public function controlStatusChange($image)
+    {
+        $changes = $image->getDirty();
+        if (isset($changes['status']) && ($changes['status'] === 'APPROVED')) {
+            event(new ImageApproved($image));
+        }
     }
 }

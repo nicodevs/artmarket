@@ -2,8 +2,8 @@
 
 namespace App\Events;
 
-use App\Comment;
 use App\Image;
+use App\Comment;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -27,8 +27,8 @@ class CommentCreated
      */
     public function __construct(Image $image, Comment $comment)
     {
-        $this->comment = $comment;
         $this->image = $image;
+        $this->comment = $comment;
     }
 
     /**

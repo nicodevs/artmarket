@@ -5,10 +5,12 @@ namespace Tests\Feature;
 use App\Image;
 use App\User;
 use App\Contest;
+use App\Events\ImageApproved;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Event;
 
 class ImagesTest extends TestCase
 {
@@ -452,5 +454,24 @@ class ImagesTest extends TestCase
                     'orientation' => $file->orientation
                 ]
             ]);
+    }
+
+    public function test_an_admin_can_approve_an_image()
+    {
+        Event::fake();
+
+        $image = factory(Image::class, 'without_relationships')->create();
+
+        $response = $this->actingAsAdmin()
+            ->json('PUT', 'api/images/' . $image->id, ['status' => 'APPROVED'])
+            ->assertStatus(200)
+            ->assertJson([
+                'data' => ['status' => 'APPROVED'],
+                'success' => true
+            ]);
+
+        Event::assertDispatched(ImageApproved::class, function ($event) use ($image) {
+            return $event->image->id === $image->id;
+        });
     }
 }

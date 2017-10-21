@@ -2,8 +2,8 @@
 
 namespace App\Events;
 
-use App\Like;
 use App\Image;
+use App\Like;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -27,8 +27,8 @@ class ImageLiked
      */
     public function __construct(Image $image, Like $like)
     {
-        $this->like = $like;
         $this->image = $image;
+        $this->like = $like;
     }
 
     /**

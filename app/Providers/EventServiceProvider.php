@@ -19,6 +19,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\ImageLiked' => [
             'App\Listeners\CreateLikeNotification',
         ],
+        'App\Events\ImageApproved' => [
+            'App\Listeners\CreateApprovalNotification',
+        ],
     ];
 
     /**

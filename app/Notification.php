@@ -54,7 +54,7 @@ class Notification extends Model
      * @param mixed $extra
      * @return boolean
      */
-    public function compose($type, $recipient, $image, $extra)
+    public function compose($type, $recipient, $image, $extra = null)
     {
         switch ($type) {
             case 'COMMENT':
@@ -63,6 +63,14 @@ class Notification extends Model
 
             case 'LIKE':
                 $description = 'A <a href="/author/' . $extra->user->username . '">' . $extra->user->first_name . '</a> le gusta tu imagen <a href="/images/' . $image->id . '">' . $image->name . '</a>';
+                break;
+
+            case 'APPROVAL':
+                $description = 'Tu imagen <a href="/images/' . $image->id . '">' . $image->name . '</a> ha sido aproada';
+                break;
+
+            default:
+                $description = '';
                 break;
         }
 
