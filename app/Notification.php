@@ -81,4 +81,34 @@ class Notification extends Model
             'description' => $description
         ]);
     }
+
+    /**
+     * Get the latest notifications grouped by user
+     *
+     * @param string $period
+     * @param array $types
+     * @return array
+     */
+    public function unreadGroupedByUser($period, $types)
+    {
+        return $this->with('user')
+            ->where([
+                ['created_at', '>', date('Y-m-d', strtotime($period))],
+                ['mailed', '=', 0]
+            ])
+            ->whereIn('type', $types)
+            ->get()
+            ->groupBy('user_id')
+            ->map(function ($notifications) {
+                return [
+                    'user' => $notifications->first()->user,
+                    'notifications' => $notifications,
+                    'notification_counters' => $notifications
+                        ->groupBy('type')
+                        ->map(function ($type) {
+                            return $type->count();
+                        })->toArray()
+                ];
+            });
+    }
 }

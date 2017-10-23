@@ -14,11 +14,18 @@
 </h1>
 
 <p>
-    Te contamos que hemos aprobado
-    @if ($notification_counters['APPROVAL'] > 1)
-        {{$notification_counters['APPROVAL']}} de tus im&aacute;genes subidas recientemente.
-    @else
-        una de tus im&aacute;genes subidas recientemente.
+    Esta semana tuviste
+
+    @if (isset($notification_counters['LIKE']))
+        {{ $notification_counters['LIKE'] }} like{{ $notification_counters['LIKE'] > 1 ? 's' : ''}}
+    @endif
+
+    @if (isset($notification_counters['LIKE']) && isset($notification_counters['COMMENT']))
+        y
+    @endif
+
+    @if (isset($notification_counters['COMMENT']))
+        {{ $notification_counters['COMMENT'] }} comentario{{ $notification_counters['COMMENT'] > 1 ? 's' : ''}}
     @endif
 </p>
 

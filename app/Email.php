@@ -39,8 +39,21 @@ class Email extends Model
      */
     public function composeApprovalEmail($notifications)
     {
-        $html = view('approvals')->with(['user' => $notifications])->render();
+        $html = view('approvals')->with($notifications)->render();
         $subject = ($notifications['notification_counters']['APPROVAL'] > 1)? 'Tus obras fueron aprobadas' : 'Tu obra fue aprobada';
+        return $this->compose($subject, $notifications['user']['email'], $html);
+    }
+
+    /**
+     * Composes an interactions email
+     *
+     * @param array $notifications
+     * @return App\Email
+     */
+    public function composeInteractionsEmail($notifications)
+    {
+        $html = view('interactions')->with($notifications)->render();
+        $subject = 'Tu resumen semanal';
         return $this->compose($subject, $notifications['user']['email'], $html);
     }
 }

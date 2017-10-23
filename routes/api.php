@@ -21,5 +21,4 @@ Route::post('images/files', 'ImageFileController@store');
 Route::post('images/{image}/comments', 'CommentController@store');
 Route::post('images/{image}/likes', 'LikeController@store');
 Route::delete('images/{image}/likes', 'LikeController@destroy');
-
-Route::get('notifications/send/daily', 'SummaryController@index');
+Route::get('summary', 'SummaryController@index');

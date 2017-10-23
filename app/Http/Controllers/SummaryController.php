@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Email;
+use App\Exceptions\InvalidSummaryTypeException;
 use App\Http\Resources\Core\Collection as CollectionResource;
 use App\Http\Resources\Core\Item as ItemResource;
 use App\Notification;
 use App\User;
-use App\Email;
 use Illuminate\Http\Request;
 
 class SummaryController extends Controller
@@ -14,44 +15,40 @@ class SummaryController extends Controller
     /**
      * Sends the notifications daily summary by email
      *
+     * @param \Illuminate\Http\Request $request
      * @param App\Notification $notification
      * @param App\User $user
      * @param App\Email $email
      * @return void
      */
-    public function index(Notification $notification, User $user, Email $email)
+    public function index(Request $request, Notification $notification, Email $email)
     {
-        $notifications = $notification->where([
-            ['created_at', '>', date('Y-m-d', strtotime('-1 day'))],
-            ['mailed', '=', 0]
-        ])->get();
+        switch ($request->type) {
+            case 'approvals':
+                $period = '-1 day';
+                $types = ['APPROVAL'];
+                $method = 'composeApprovalEmail';
+                break;
 
-        $notifications = $notifications->filter(function ($notification) {
-            return $notification->type === 'APPROVAL' && !$notification->mailed;
-        });
+            case 'interactions':
+                $period = '-60 days';
+                $types = ['COMMENT', 'LIKE'];
+                $method = 'composeInteractionsEmail';
+                break;
 
-        $result = $notifications
-            ->groupBy('user_id')
-            ->map(function ($notifications, $userId) use ($user) {
-                return [
-                    'user' => $user->find($userId)->toArray(),
-                    'notifications' => $notifications->toArray(),
-                    'notification_counters' => $notifications
-                        ->groupBy('type')
-                        ->map(function ($type) {
-                            return $type->count();
-                        })->toArray()
-                ];
-            })
-            ->map(function ($group) use ($email) {
-                $group['email'] = $email->composeApprovalEmail($group);
-                return $group;
+            default:
+                throw new InvalidSummaryTypeException;
+                break;
+        }
+
+        $result = $notification->unreadGroupedByUser($period, $types)
+            ->each(function ($group) use ($email, $method) {
+                call_user_func([$email, $method], $group);
+                $group['notifications']->each(function ($notification) {
+                    $notification->update(['mailed' => 1]);
+                });
             });
 
-        $notifications->each(function ($notification) {
-            $notification->update(['mailed' => 1]);
-        });
-
-        return ['success' => true, 'data' => array_values($result->toArray())];
+        return ['success' => true, 'data' => array_values(json_decode(json_encode($result), true))];
     }
 }

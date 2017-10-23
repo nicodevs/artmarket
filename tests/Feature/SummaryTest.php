@@ -13,22 +13,30 @@ class SummaryTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_daily_summary()
+    public function test_approvals_summary()
     {
-        $users = factory(User::class, 10)->create()->pluck('id')->all();
-        $images = factory(Image::class, 'without_relationships', 10)->create()->pluck('id')->all();
+        $user = factory(User::class)->create(['email' => 'tester@example.com']);
+        $image = factory(Image::class, 'without_relationships', 10)->create(['user_id' => $user->id]);
 
-        $notifications = Collection::times(10, function ($number) use ($users, $images) {
+        Collection::times(10, function ($number) use ($user) {
             return factory(Notification::class)->create([
-                'image_id' => $images[array_rand($images)],
-                'user_id' => $users[array_rand($users)]
+                'image_id' => $number,
+                'user_id' => $user->id,
+                'type' => 'APPROVAL'
             ]);
         });
 
-        $this->json('GET', 'api/notifications/send/daily')
+        $response = $this->json('GET', 'api/summary?type=approvals')
             ->assertStatus(200)
             ->assertJson([
-                'success' => true
+                'success' => true,
+                'data' => [
+                    [
+                        'notification_counters' => [
+                            'APPROVAL' => 10
+                        ]
+                    ]
+                ]
             ])
             ->assertJsonStructure([
                 'data' => [
@@ -46,14 +54,81 @@ class SummaryTest extends TestCase
                                 'description'
                             ]
                         ],
-                        'notification_counters',
-                        'email' => [
-                            'subject',
-                            'recipient',
-                            'body'
-                        ]
+                        'notification_counters'
                     ]
                 ]
             ]);
+
+        $this->assertDatabaseHas('emails', [
+            'recipient' => 'tester@example.com'
+        ]);
+    }
+
+    public function test_interactions_summary()
+    {
+        $user = factory(User::class)->create(['email' => 'tester@example.com']);
+        $image = factory(Image::class, 'without_relationships', 10)->create(['user_id' => $user->id]);
+
+        Collection::times(5, function ($number) use ($user) {
+            return factory(Notification::class)->create([
+                'image_id' => $number,
+                'user_id' => $user->id,
+                'type' => 'LIKE',
+                'description' => 'Foo'
+            ]);
+        });
+
+        Collection::times(5, function ($number) use ($user) {
+            return factory(Notification::class)->create([
+                'image_id' => $number,
+                'user_id' => $user->id,
+                'type' => 'COMMENT',
+                'description' => 'Foo'
+            ]);
+        });
+
+        $response = $this->json('GET', 'api/summary?type=interactions')
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    [
+                        'notification_counters' => [
+                            'COMMENT' => 5,
+                            'LIKE' => 5
+                        ]
+                    ]
+                ]
+            ])
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'user' => [
+                            'id',
+                            'email'
+                        ],
+                        'notifications' => [
+                            '*' => [
+                                'id',
+                                'user_id',
+                                'image_id',
+                                'type',
+                                'description'
+                            ]
+                        ],
+                        'notification_counters'
+                    ]
+                ]
+            ]);
+
+        $this->assertDatabaseHas('emails', [
+            'recipient' => 'tester@example.com'
+        ]);
+    }
+
+    public function test_an_invalid_summary_type_returns_error()
+    {
+        $response = $this->json('GET', 'api/summary?type=foo')
+            ->assertStatus(422);
     }
 }
