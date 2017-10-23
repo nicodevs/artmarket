@@ -22,3 +22,4 @@ Route::post('images/{image}/comments', 'CommentController@store');
 Route::post('images/{image}/likes', 'LikeController@store');
 Route::delete('images/{image}/likes', 'LikeController@destroy');
 Route::get('summary', 'SummaryController@index');
+Route::post('password/recovery', 'PasswordRecoveryController@store');

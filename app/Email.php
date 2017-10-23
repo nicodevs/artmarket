@@ -20,7 +20,7 @@ class Email extends Model
      * @param string $subject
      * @param string $recipent
      * @param string $body
-     * @return App\Email
+     * @return \App\Email
      */
     public function compose($subject, $recipient, $body)
     {
@@ -32,10 +32,10 @@ class Email extends Model
     }
 
     /**
-     * Composes an approval email
+     * Composes an approval email.
      *
      * @param array $notifications
-     * @return App\Email
+     * @return \App\Email
      */
     public function composeApprovalEmail($notifications)
     {
@@ -45,10 +45,10 @@ class Email extends Model
     }
 
     /**
-     * Composes an interactions email
+     * Composes an interactions email.
      *
      * @param array $notifications
-     * @return App\Email
+     * @return \App\Email
      */
     public function composeInteractionsEmail($notifications)
     {
@@ -58,15 +58,29 @@ class Email extends Model
     }
 
     /**
-     * Composes a welcome email
+     * Composes a welcome email.
      *
-     * @param array $user
-     * @return App\Email
+     * @param \App\User $user
+     * @return \App\Email
      */
     public function composeWelcomeEmail($user)
     {
         $html = view('welcome')->with(compact('user'))->render();
         $subject = 'Bienvenido a Enpics';
+        return $this->compose($subject, $user['email'], $html);
+    }
+
+    /**
+     * Composes a password recovery email.
+     *
+     * @param \App\User $user
+     * @param string $token
+     * @return \App\Email
+     */
+    public function composePasswordRecoveryEmail($user, $token)
+    {
+        $html = view('passwordRecovery')->with(compact('user', 'token'))->render();
+        $subject = 'Recuperar clave';
         return $this->compose($subject, $user['email'], $html);
     }
 }
