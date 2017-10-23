@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserRegistered;
 use App\User;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -25,18 +26,18 @@ class RegistrationController extends Controller
         ]);
         $data['password'] = bcrypt($data['password']);
 
-        // Create username based on email
         if (!isset($data['username'])) {
             $data['username'] = $user->createUsername($data['email']);
         }
 
-        // Divide full name into first and last name
         if (isset($data['name'])) {
             $data = $user->splitName($data);
         }
 
         $user = $user->create($data);
         $token = JWTAuth::fromUser($user);
+
+        event(new UserRegistered($user));
 
         return [
             'data' => array_merge($user->toArray(), ['token' => $token]),

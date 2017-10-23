@@ -1,95 +1,33 @@
 <!doctype html>
-<html lang="{{ app()->getLocale() }}">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
+<head>
+<meta name='viewport' content='width=device-width'>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<title>Bienvenido a Enpics</title>
 
-        <title>Laravel</title>
+<div style="background-color: #A0DACD; padding: 20px; color: #FFF">
+    <a href="http://www.enpics.com"><img src="http://www.enpics.com/website/assets/img/logo-enpics.png" alt="Enpics"></a>
+</div>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+<h1>
+    Hola, {{$user->username}}!
+</h1>
 
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Raleway', sans-serif;
-                font-weight: 100;
-                height: 100vh;
-                margin: 0;
-            }
+<p>
+    Te damos la bienvenida a Enpics. A partir de este momento podr&aacute;s comprar obras de artistas independientes en cuadros de la mejor calidad. &iexcl;Y tambi&eacute;n vender tus creaciones!
+</p>
 
-            .full-height {
-                height: 100vh;
-            }
+<p>
+    Como regalo de bienvenida te damos un 10% de descuento en tu primera compra utilizando el cup&oacute;n <strong>PRIMERACOMPRA</strong>. ¡Ingresalo antes de abonar tu compra y listo!
+</p>
 
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
+<p>
+    Ante cualquier duda comunicate con nosotros a <a href="mailto:info@enpics.com.ar" style="color: #56A794">info@enpics.com.ar</a>
+</p>
 
-            .position-ref {
-                position: relative;
-            }
+<p>
+    <strong>El equipo de Enpics</strong>
+</p>
 
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-                        <a href="{{ route('register') }}">Register</a>
-                    @endauth
-                </div>
-            @endif
-
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
-                </div>
-
-                <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>
-            </div>
-        </div>
-    </body>
+</body>
 </html>

@@ -56,4 +56,17 @@ class Email extends Model
         $subject = 'Tu resumen semanal';
         return $this->compose($subject, $notifications['user']['email'], $html);
     }
+
+    /**
+     * Composes a welcome email
+     *
+     * @param array $user
+     * @return App\Email
+     */
+    public function composeWelcomeEmail($user)
+    {
+        $html = view('welcome')->with(compact('user'))->render();
+        $subject = 'Bienvenido a Enpics';
+        return $this->compose($subject, $user['email'], $html);
+    }
 }

@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Events\UserRegistered;
 use App\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
@@ -12,6 +14,8 @@ class RegistrationTest extends TestCase
 
     public function test_a_user_can_register()
     {
+        Event::fake();
+
         $user = factory(User::class)->make();
 
         $response = $this->json('POST', 'api/auth/signup', [
@@ -33,5 +37,9 @@ class RegistrationTest extends TestCase
             ->assertJsonStructure([
                 'data' => ['token']
             ]);
+
+        Event::assertDispatched(UserRegistered::class, function ($event) use ($user) {
+            return $event->user->email === $user->email;
+        });
     }
 }
