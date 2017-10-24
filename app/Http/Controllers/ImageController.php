@@ -219,8 +219,7 @@ class ImageController extends Controller
      */
     public function controlStatusChange($image)
     {
-        $changes = $image->getDirty();
-        if (isset($changes['status']) && ($changes['status'] === 'APPROVED')) {
+        if ($image->isDirty('status') && ($image->status === 'APPROVED')) {
             event(new ImageApproved($image));
         }
     }

@@ -474,4 +474,18 @@ class ImagesTest extends TestCase
             return $event->image->id === $image->id;
         });
     }
+
+    public function test_a_guest_can_flag_an_image()
+    {
+        $image = factory(Image::class, 'without_relationships')->create();
+        $this->json('POST', 'api/images/' . $image->id . '/flag', ['message' => 'Foo'])
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true
+            ]);
+
+        $this->assertDatabaseHas('emails', [
+            'subject' => 'Imagen ' . $image->id . ' reportada'
+        ]);
+    }
 }

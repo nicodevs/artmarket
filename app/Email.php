@@ -83,4 +83,31 @@ class Email extends Model
         $subject = 'Recuperar clave';
         return $this->compose($subject, $user['email'], $html);
     }
+
+    /**
+     * Composes a image flag email.
+     *
+     * @param array $data
+     * @param \App\Image $image
+     * @return \App\Email
+     */
+    public function composeImageFlagEmail($data, $image)
+    {
+        $html = view('imageFlag')->with(compact('data', 'image'))->render();
+        $subject = 'Imagen ' . $image->id . ' reportada';
+        return $this->compose($subject, env('ADMIN_EMAIL'), $html);
+    }
+
+    /**
+     * Composes a contact email.
+     *
+     * @param array $data
+     * @return \App\Email
+     */
+    public function composeContactEmail($data)
+    {
+        $html = view('contact')->with(compact('data'))->render();
+        $subject = 'Mensaje de ' . $data['email'] . ' desde el sitio web';
+        return $this->compose($subject, env('ADMIN_EMAIL'), $html);
+    }
 }
