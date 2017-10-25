@@ -19,7 +19,8 @@ class ContestController extends Controller
         'title' => 'required|max:255',
         'description' => 'required',
         'terms' => 'required',
-        'cover' => 'required|dimensions:min_width=100,min_height=100',
+        'cover_desktop' => 'required|dimensions:min_width=100,min_height=100',
+        'cover_mobile' => 'sometimes|dimensions:min_width=100,min_height=100',
         'prize_image_desktop' => 'sometimes|dimensions:min_width=100,min_height=100',
         'prize_image_mobile' => 'sometimes|dimensions:min_width=100,min_height=100',
         'winners_image_desktop' => 'sometimes|dimensions:min_width=100,min_height=100',
@@ -33,7 +34,8 @@ class ContestController extends Controller
      * @var array
      */
     protected $imageFields = [
-        'cover',
+        'cover_desktop',
+        'cover_mobile',
         'prize_image_desktop',
         'prize_image_mobile',
         'winners_image_desktop',

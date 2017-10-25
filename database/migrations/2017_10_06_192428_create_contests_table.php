@@ -19,7 +19,8 @@ class CreateContestsTable extends Migration
             $table->string('title');
             $table->string('description')->nullable();
             $table->text('terms', 16777215);
-            $table->string('cover', 150)->nullable();
+            $table->string('cover_desktop', 150)->nullable();
+            $table->string('cover_mobile', 150)->nullable();
             $table->string('prize_image_desktop', 150)->nullable();
             $table->string('prize_image_mobile', 150)->nullable();
             $table->string('winners_image_desktop', 150)->nullable();

@@ -20,6 +20,7 @@ class CreateSlidesTable extends Migration
             $table->string('mobile')->default('');
             $table->integer('sequence')->default(0);
             $table->string('href')->default('');
+            $table->string('section')->default('');
             $table->timestamps();
         });
     }

@@ -19,7 +19,8 @@ class SlideController extends Controller
         'desktop' => 'required|dimensions:min_width=100,min_height=100',
         'mobile' => 'required|dimensions:min_width=100,min_height=100',
         'sequence' => 'integer',
-        'href' => 'url'
+        'href' => 'url',
+        'section' => 'string'
     ];
 
     /**

@@ -11,6 +11,7 @@ class Slide extends Model
         'desktop',
         'mobile',
         'sequence',
-        'href'
+        'href',
+        'section'
     ];
 }

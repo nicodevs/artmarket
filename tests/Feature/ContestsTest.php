@@ -24,7 +24,8 @@ class ContestsTest extends TestCase
             'description' => $contest->description,
             'terms' => $contest->terms,
             'expires_at' => $contest->expires_at,
-            'cover' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
+            'cover_desktop' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
+            'cover_mobile' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
             'prize_image_desktop' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
             'prize_image_mobile' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
             'winners_image_desktop' => UploadedFile::fake()->image('desktop.jpg', 300, 300)->size(1000),
@@ -35,7 +36,8 @@ class ContestsTest extends TestCase
 
         $this->contest = json_decode($response->getContent())->data;
 
-        Storage::disk('uploads')->assertExists('contests/' . $this->contest->cover);
+        Storage::disk('uploads')->assertExists('contests/' . $this->contest->cover_desktop);
+        Storage::disk('uploads')->assertExists('contests/' . $this->contest->cover_mobile);
         Storage::disk('uploads')->assertExists('contests/' . $this->contest->prize_image_desktop);
         Storage::disk('uploads')->assertExists('contests/' . $this->contest->prize_image_mobile);
         Storage::disk('uploads')->assertExists('contests/' . $this->contest->winners_image_desktop);
@@ -54,7 +56,7 @@ class ContestsTest extends TestCase
                     'slug' => str_slug($this->contest->title, '-'),
                     'description' => $this->contest->description,
                     'terms' => $this->contest->terms,
-                    'cover' => $this->contest->cover,
+                    'cover_desktop' => $this->contest->cover_desktop,
                     'prize_image_desktop' => $this->contest->prize_image_desktop,
                     'prize_image_mobile' => $this->contest->prize_image_mobile,
                     'winners_image_desktop' => $this->contest->winners_image_desktop,
@@ -92,7 +94,7 @@ class ContestsTest extends TestCase
                         'title',
                         'slug',
                         'description',
-                        'cover',
+                        'cover_desktop',
                         'prize_image_desktop',
                         'prize_image_mobile',
                         'winners_image_desktop',
