@@ -75,6 +75,14 @@ class Image extends Model
     }
 
     /**
+     * The contest the image belongs to.
+     */
+    public function contest()
+    {
+        return $this->belongsTo('App\Contest');
+    }
+
+    /**
      * Scope a query to only include active users.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query

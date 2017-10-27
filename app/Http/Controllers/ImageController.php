@@ -76,7 +76,9 @@ class ImageController extends Controller
             event(new ImageSearched($data['keyword'], $image, auth()->user()));
         }
 
-        return new CollectionResource($image->paginate(10));
+        $images = Image::with('user', 'categories:id,name', 'comments.user:id,username,first_name,last_name,avatar', 'likes', 'contest:id,slug');
+
+        return new CollectionResource($images->paginate(10));
     }
 
     /**
@@ -107,6 +109,8 @@ class ImageController extends Controller
      */
     public function show(Image $image)
     {
+        $image->load('user', 'categories:id,name', 'comments.user:id,username,first_name,last_name,avatar', 'likes', 'contest:id,slug');
+
         return new ItemResource($image);
     }
 
