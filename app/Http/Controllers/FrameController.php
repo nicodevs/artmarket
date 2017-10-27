@@ -127,7 +127,8 @@ class FrameController extends Controller
     {
         switch ($field) {
             case 'border':
-                $folder = 'borders/desktop/';                break;
+                $folder = 'borders/desktop/';
+                break;
 
             case 'border_mobile':
                 $folder = 'borders/mobile/';
