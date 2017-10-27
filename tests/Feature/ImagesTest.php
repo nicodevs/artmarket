@@ -2,15 +2,16 @@
 
 namespace Tests\Feature;
 
-use App\Image;
-use App\User;
 use App\Contest;
 use App\Events\ImageApproved;
+use App\Events\ImageSearched;
+use App\Image;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
 class ImagesTest extends TestCase
 {
@@ -486,6 +487,61 @@ class ImagesTest extends TestCase
 
         $this->assertDatabaseHas('emails', [
             'subject' => 'Imagen ' . $image->id . ' reportada'
+        ]);
+    }
+
+    public function test_a_user_can_search_images()
+    {
+        Event::fake();
+
+        $images = factory(Image::class, 'without_relationships', 4)->create();
+        $image = factory(Image::class, 'without_relationships')->create([
+            'name' => 'Foo bar baz'
+        ]);
+
+        $user = factory(User::class)->create();
+
+        $this->actingAsUser($user)
+            ->json('GET', 'api/images', ['keyword' => 'Foo bar baz'])
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'meta' => [
+                    'total' => 1
+                ],
+                'data' => [
+                    ['name' => 'Foo bar baz']
+                ]
+            ]);
+
+        Event::assertDispatched(ImageSearched::class, function ($event) use ($user) {
+            return $event->keyword === 'Foo bar baz' && $event->user->id === $user->id;
+        });
+    }
+
+    public function test_a_guest_can_search_images()
+    {
+        $images = factory(Image::class, 'without_relationships', 4)->create();
+        $image = factory(Image::class, 'without_relationships')->create([
+            'name' => 'Foo bar baz'
+        ]);
+
+        $user = factory(User::class)->create();
+
+        $this->json('GET', 'api/images', ['keyword' => 'Foo bar baz'])
+            ->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'meta' => [
+                    'total' => 1
+                ],
+                'data' => [
+                    ['name' => 'Foo bar baz']
+                ]
+            ]);
+
+        $this->assertDatabaseHas('searches', [
+            'keyword' => 'Foo bar baz'
         ]);
     }
 }

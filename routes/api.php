@@ -25,3 +25,4 @@ Route::delete('images/{image}/likes', 'LikeController@destroy');
 Route::get('summary', 'SummaryController@index');
 Route::post('password/recovery', 'PasswordRecoveryController@store');
 Route::post('contact', 'ContactController@store');
+Route::get('searches', 'SearchController@index');

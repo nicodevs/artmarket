@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\ImageApproved;
+use App\Events\ImageSearched;
 use App\Exceptions\InvalidUploadedFileException;
 use App\Http\Resources\Image as ItemResource;
 use App\Http\Resources\Images as CollectionResource;
@@ -56,24 +57,33 @@ class ImageController extends Controller
      */
     public function __construct()
     {
+        $this->middleware('api.optional_auth');
         $this->middleware('api.auth')->except(['index', 'show']);
     }
 
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Image $image
      * @return \Illuminate\Http\Response
      */
-    public function index(Image $image)
+    public function index(Request $request, Image $image)
     {
+        $data = $request->validate(['keyword' => 'sometimes|string|min:3']);
+        if (isset($data['keyword'])) {
+            $image = $image->search($data['keyword']);
+            event(new ImageSearched($data['keyword'], $image, auth()->user()));
+        }
+
         return new CollectionResource($image->paginate(10));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\ImageFile  $imageFile
+     * @param \Illuminate\Http\Request $request
+     * @param \App\ImageFile $imageFile
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, ImageFile $imageFile)

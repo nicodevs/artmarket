@@ -21,6 +21,9 @@ class CreateUsersTable extends Migration
             $table->string('last_name', 50)->nullable();
             $table->string('ip')->default('');
             $table->string('facebook_id')->nullable();
+            $table->string('facebook_link')->nullable();
+            $table->integer('facebook_age_range')->unsigned()->nullable();
+            $table->string('gender')->nullable();
             $table->boolean('geo_ip')->default(0);
             $table->string('city')->nullable()->default('');
             $table->string('region')->nullable()->default('');

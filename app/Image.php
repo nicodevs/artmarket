@@ -75,6 +75,20 @@ class Image extends Model
     }
 
     /**
+     * Scope a query to only include active users.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $keyword
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSearch($query, $keyword)
+    {
+        return $query->where('name', 'LIKE', "%{$keyword}%")
+            ->orWhere('description', 'LIKE', "%{$keyword}%")
+            ->orWhere('tags', 'LIKE', "%{$keyword}%");
+    }
+
+    /**
      * Adds the image to an array of categories.
      *
      * @param  array  $data

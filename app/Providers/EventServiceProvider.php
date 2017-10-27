@@ -22,6 +22,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\ImageApproved' => [
             'App\Listeners\CreateApprovalNotification',
         ],
+        'App\Events\ImageSearched' => [
+            'App\Listeners\CreateSearchEntry',
+        ],
         'App\Events\UserRegistered' => [
             'App\Listeners\SendWelcomeEmail',
         ],
