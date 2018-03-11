@@ -66,7 +66,7 @@ class Email extends Model
     public function composeWelcomeEmail($user)
     {
         $html = view('welcome')->with(compact('user'))->render();
-        $subject = 'Bienvenido a Enpics';
+        $subject = 'Te damos la bienvenida';
         return $this->compose($subject, $user['email'], $html);
     }
 

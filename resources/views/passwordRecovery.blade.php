@@ -5,9 +5,7 @@
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
 <title>Recuperar clave</title>
 
-<div style="background-color: #A0DACD; padding: 20px; color: #FFF">
-    <a href="http://www.enpics.com"><img src="http://www.enpics.com/website/assets/img/logo-enpics.png" alt="Enpics"></a>
-</div>
+
 
 <h1>
     Recuperar clave
@@ -26,7 +24,7 @@
 </p>
 
 <p>
-    <strong>El equipo de Enpics</strong>
+    <strong>El equipo</strong>
 </p>
 
 </body>
